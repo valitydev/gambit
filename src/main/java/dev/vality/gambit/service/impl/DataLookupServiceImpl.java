@@ -28,6 +28,6 @@ public class DataLookupServiceImpl implements DataLookupService {
     public Map<Integer, Long> getDataIds(Set<Integer> dataSetInfoIds, int hash) {
         log.debug("Querying for data ids. dataSetInfoIds: {}, hash: {}", dataSetInfoIds, hash);
         return dataLookupDao.getDataLookups(dataSetInfoIds, hash).stream()
-                .collect(Collectors.toMap(DataLookup::getDatasetInfoId, DataLookup::getDataId));
+                .collect(Collectors.toMap(DataLookup::getDataSetInfoId, DataLookup::getDataId));
     }
 }

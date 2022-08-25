@@ -14,7 +14,7 @@ class DataLookupFactoryTest {
         int hash = 435116;
         DataLookup actual = DataLookupFactory.create(dataSetInfoId, dataId, hash);
         assertNull(actual.getId());
-        assertEquals(dataSetInfoId, actual.getDatasetInfoId());
+        assertEquals(dataSetInfoId, actual.getDataSetInfoId());
         assertEquals(dataId, actual.getDataId());
         assertEquals(hash, actual.getHash());
     }

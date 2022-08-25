@@ -56,7 +56,7 @@ public class DataDaoImpl extends AbstractGenericDao implements DataDao {
     public Long getRandomDataId(Integer dataSetInfoId) {
         Query query = getDslContext().select(DATA.ID)
                 .from(DATA)
-                .where(DATA.DATASET_INFO_ID.eq(dataSetInfoId))
+                .where(DATA.DATA_SET_INFO_ID.eq(dataSetInfoId))
                 .orderBy(DSL.rand())
                 .limit(1);
         return Optional.ofNullable(fetchOne(query, idRowMapper))

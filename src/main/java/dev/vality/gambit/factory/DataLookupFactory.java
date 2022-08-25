@@ -9,7 +9,7 @@ public class DataLookupFactory {
 
     public static DataLookup create(Integer dataSetInfoId, Long dataId, int hash) {
         var dataLookup = new DataLookup();
-        dataLookup.setDatasetInfoId(dataSetInfoId);
+        dataLookup.setDataSetInfoId(dataSetInfoId);
         dataLookup.setDataId(dataId);
         dataLookup.setHash(hash);
         return dataLookup;

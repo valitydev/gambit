@@ -134,11 +134,11 @@ class StubDataServiceHandlerIntegrationTest {
                 dataLookupDao.getDataLookups(Set.of(DATA_SET_INFO_ID, DATA_SET_INFO_IP_ID), hash);
         assertTrue(actualDataLookups.contains(firstDataLookup));
         DataLookup newDataLookup = actualDataLookups.stream()
-                .filter(dataLookup -> dataLookup.getDatasetInfoId().equals(DATA_SET_INFO_IP_ID))
+                .filter(dataLookup -> dataLookup.getDataSetInfoId().equals(DATA_SET_INFO_IP_ID))
                 .findFirst()
                 .orElseThrow();
         assertNotNull(newDataLookup.getId());
-        assertEquals(DATA_SET_INFO_IP_ID, newDataLookup.getDatasetInfoId());
+        assertEquals(DATA_SET_INFO_IP_ID, newDataLookup.getDataSetInfoId());
         assertEquals(2L, newDataLookup.getDataId());
         assertEquals(hash, newDataLookup.getHash());
     }

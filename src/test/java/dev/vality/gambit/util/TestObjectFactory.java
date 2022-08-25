@@ -51,7 +51,7 @@ public class TestObjectFactory {
 
     public static Data createData(Integer dataSetInfoId, String values, String valuesHash) {
         var data = new Data();
-        data.setDatasetInfoId(dataSetInfoId);
+        data.setDataSetInfoId(dataSetInfoId);
         data.setValues(values);
         data.setValuesHash(valuesHash);
         return data;

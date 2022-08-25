@@ -94,7 +94,7 @@ public class StubDataServiceHandler implements StubDataServiceSrv.Iface {
     private Map<String, String> getDataMapByDataIds(Map<Integer, DataSetInfo> dataSetInfos, Set<Long> dataIds) {
         return dataService.getDataByIds(dataIds).stream()
                 .map(data -> DataMapFactory.createDataMap(
-                        dataSetInfos.get(data.getDatasetInfoId()).getHeaders(),
+                        dataSetInfos.get(data.getDataSetInfoId()).getHeaders(),
                         data.getValues()
                 ))
                 .collect(HashMap::new, HashMap::putAll, HashMap::putAll);
