@@ -64,8 +64,8 @@ class StubDataServiceHandlerIntegrationTest {
         assertThrows(
                 DataSetNotFound.class,
                 () -> handler.getData(new DataRequest()
-                        .setDatasetsNames(List.of(DATA_SET_INFO_NAME, "non_existing"))
-                        .setHash(hash))
+                        .setDataSetsNames(Set.of(DATA_SET_INFO_NAME, "non_existing"))
+                        .setLookupKey(hash))
         );
     }
 
@@ -88,8 +88,8 @@ class StubDataServiceHandlerIntegrationTest {
         assertTrue(preparedDataLookups.contains(secondDataLookup));
 
         DataResponse actual = handler.getData(new DataRequest()
-                .setDatasetsNames(List.of(DATA_SET_INFO_NAME, DATA_SET_INFO_IP_NAME))
-                .setHash(hash)
+                .setDataSetsNames(Set.of(DATA_SET_INFO_NAME, DATA_SET_INFO_IP_NAME))
+                .setLookupKey(hash)
         );
         List<DataLookup> actualDataLookups =
                 dataLookupDao.getDataLookups(Set.of(DATA_SET_INFO_ID, DATA_SET_INFO_IP_ID), hash);
@@ -120,8 +120,8 @@ class StubDataServiceHandlerIntegrationTest {
         assertTrue(preparedDataLookups.contains(firstDataLookup));
 
         DataResponse actual = handler.getData(new DataRequest()
-                .setDatasetsNames(List.of(DATA_SET_INFO_NAME, DATA_SET_INFO_IP_NAME))
-                .setHash(hash)
+                .setDataSetsNames(Set.of(DATA_SET_INFO_NAME, DATA_SET_INFO_IP_NAME))
+                .setLookupKey(hash)
         );
         Map<String, String> expected = Map.of(
                 "headerOne", "uno",
@@ -153,8 +153,8 @@ class StubDataServiceHandlerIntegrationTest {
         int hash = ThreadLocalRandom.current().nextInt(0, Integer.MAX_VALUE);
         assertTrue(CollectionUtils.isEmpty(dataLookupDao.getDataLookups(Set.of(DATA_SET_INFO_ID), hash)));
         DataResponse actual = handler.getData(new DataRequest()
-                .setDatasetsNames(List.of(DATA_SET_INFO_NAME))
-                .setHash(hash)
+                .setDataSetsNames(Set.of(DATA_SET_INFO_NAME))
+                .setLookupKey(hash)
         );
         Map<String, String> expected = Map.of(
                 "headerOne", "uno",
