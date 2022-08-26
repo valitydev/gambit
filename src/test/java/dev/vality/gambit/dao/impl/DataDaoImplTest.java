@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -91,7 +92,7 @@ class DataDaoImplTest {
         log.info("Preparing DB");
         int entriesPerDataSet = 1_000_000;
         int dataSetsCount = 3;
-        for (int i = 0; i < dataSetsCount; i++) {
+        for (int i = 1; i <= dataSetsCount; i++) {
             log.info("Preparing data set #{}", i);
             List<Data> data = new ArrayList<>();
             for (int j = 0; j < entriesPerDataSet; j++) {
@@ -106,7 +107,7 @@ class DataDaoImplTest {
         Set<Long> randomIds = new HashSet<>();
         for (int i = 0; i < 500; i++) {
             long start = System.currentTimeMillis();
-            Long randomId = dataDao.getRandomDataId(1);
+            Long randomId = dataDao.getRandomDataId(ThreadLocalRandom.current().nextInt(1, dataSetsCount + 1));
             long end = System.currentTimeMillis();
             randomIds.add(randomId);
             log.info("{}th query randomId: {}, execution time: {}ms", i, randomId, end - start);
