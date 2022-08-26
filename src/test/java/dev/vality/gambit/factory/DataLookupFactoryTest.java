@@ -16,6 +16,6 @@ class DataLookupFactoryTest {
         assertNull(actual.getId());
         assertEquals(dataSetInfoId, actual.getDataSetInfoId());
         assertEquals(dataId, actual.getDataId());
-        assertEquals(hash, actual.getHash());
+        assertEquals(hash, actual.getKey());
     }
 }

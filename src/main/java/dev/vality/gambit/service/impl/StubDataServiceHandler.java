@@ -36,7 +36,7 @@ public class StubDataServiceHandler implements StubDataServiceSrv.Iface {
         log.debug("Received request: {}", dataRequest);
         validateRequest(dataRequest);
         Map<Integer, DataSetInfo> dataSetInfos =
-                dataSetInfoService.getDataSetInfoByNames(dataRequest.getDatasetsNames());
+                dataSetInfoService.getDataSetInfoByNames(dataRequest.getDataSetsNames());
         Set<Long> dataIds = getDataIds(dataRequest, dataSetInfos);
         Map<String, String> mergedDataMap = getDataMapByDataIds(dataSetInfos, dataIds);
         log.debug("Result map: {}", mergedDataMap);
@@ -45,13 +45,14 @@ public class StubDataServiceHandler implements StubDataServiceSrv.Iface {
 
 
     private void validateRequest(DataRequest dataRequest) {
-        if (CollectionUtils.isEmpty(dataRequest.getDatasetsNames())) {
+        if (CollectionUtils.isEmpty(dataRequest.getDataSetsNames())) {
             throw new IllegalStateException("Empty data set names list");
         }
     }
 
     private Set<Long> getDataIds(DataRequest dataRequest, Map<Integer, DataSetInfo> dataSetInfos) {
-        Map<Integer, Long> assignedDataIds = dataLookupService.getDataIds(dataSetInfos.keySet(), dataRequest.getHash());
+        Map<Integer, Long> assignedDataIds =
+                dataLookupService.getDataIds(dataSetInfos.keySet(), dataRequest.getLookupKey());
         Set<Long> newlyAssignedDataIds = assignDataIdsToNewHash(dataRequest, dataSetInfos, assignedDataIds);
 
         return Stream.concat(assignedDataIds.values().stream(), newlyAssignedDataIds.stream())
@@ -62,7 +63,7 @@ public class StubDataServiceHandler implements StubDataServiceSrv.Iface {
                                              Map<Integer, DataSetInfo> dataSetInfos,
                                              Map<Integer, Long> assignedDataIds) {
         Set<Integer> unassignedDataSetInfoIds = getUnassignedDataSetInfoIds(dataSetInfos.keySet(), assignedDataIds);
-        return createDataLookup(unassignedDataSetInfoIds, dataRequest.getHash());
+        return createDataLookup(unassignedDataSetInfoIds, dataRequest.getLookupKey());
     }
 
     private Set<Integer> getUnassignedDataSetInfoIds(Set<Integer> dataSetInfoIds,
@@ -75,10 +76,10 @@ public class StubDataServiceHandler implements StubDataServiceSrv.Iface {
                 .collect(Collectors.toSet());
     }
 
-    private Set<Long> createDataLookup(Set<Integer> dataSetInfoIds, int hash) {
+    private Set<Long> createDataLookup(Set<Integer> dataSetInfoIds, int lookupKey) {
         Set<DataLookup> entities = dataSetInfoIds.stream()
                 .map(dataSetInfoId ->
-                        DataLookupFactory.create(dataSetInfoId, dataService.getRandomDataId(dataSetInfoId), hash))
+                        DataLookupFactory.create(dataSetInfoId, dataService.getRandomDataId(dataSetInfoId), lookupKey))
                 .collect(Collectors.toSet());
 
         if (!CollectionUtils.isEmpty(entities)) {

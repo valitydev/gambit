@@ -37,10 +37,10 @@ public class DataLookupDaoImpl extends AbstractGenericDao implements DataLookupD
     }
 
     @Override
-    public List<DataLookup> getDataLookups(Set<Integer> dataSetInfoIds, int hash) {
+    public List<DataLookup> getDataLookups(Set<Integer> dataSetInfoIds, int key) {
         Query query = getDslContext().selectFrom(DATA_LOOKUP)
                 .where(DATA_LOOKUP.DATA_SET_INFO_ID.in(dataSetInfoIds)
-                        .and(DATA_LOOKUP.HASH.eq(hash)));
+                        .and(DATA_LOOKUP.KEY.eq(key)));
         return fetch(query, rowMapper);
     }
 

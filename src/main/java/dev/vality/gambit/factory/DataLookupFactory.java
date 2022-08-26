@@ -7,11 +7,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DataLookupFactory {
 
-    public static DataLookup create(Integer dataSetInfoId, Long dataId, int hash) {
+    public static DataLookup create(Integer dataSetInfoId, Long dataId, int key) {
         var dataLookup = new DataLookup();
         dataLookup.setDataSetInfoId(dataSetInfoId);
         dataLookup.setDataId(dataId);
-        dataLookup.setHash(hash);
+        dataLookup.setKey(key);
         return dataLookup;
     }
 

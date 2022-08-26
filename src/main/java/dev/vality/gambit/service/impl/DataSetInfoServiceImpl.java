@@ -8,9 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -27,9 +26,9 @@ public class DataSetInfoServiceImpl implements DataSetInfoService {
     }
 
     @Override
-    public Map<Integer, DataSetInfo> getDataSetInfoByNames(List<String> dataSetInfoNames) throws DataSetNotFound {
+    public Map<Integer, DataSetInfo> getDataSetInfoByNames(Set<String> dataSetInfoNames) throws DataSetNotFound {
         log.debug("Querying for dataSetInfo names: {}", dataSetInfoNames);
-        return dataSetInfoDao.getByNames(new HashSet<>(dataSetInfoNames)).stream()
+        return dataSetInfoDao.getByNames(dataSetInfoNames).stream()
                 .collect(Collectors.toMap(DataSetInfo::getId, dataSetInfo -> dataSetInfo));
     }
 

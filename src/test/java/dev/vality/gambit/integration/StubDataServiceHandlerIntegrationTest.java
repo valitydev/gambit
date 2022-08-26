@@ -140,7 +140,7 @@ class StubDataServiceHandlerIntegrationTest {
         assertNotNull(newDataLookup.getId());
         assertEquals(DATA_SET_INFO_IP_ID, newDataLookup.getDataSetInfoId());
         assertEquals(2L, newDataLookup.getDataId());
-        assertEquals(hash, newDataLookup.getHash());
+        assertEquals(hash, newDataLookup.getKey());
     }
 
     @Test

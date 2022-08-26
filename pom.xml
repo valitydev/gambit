@@ -63,7 +63,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>gambit-proto</artifactId>
-            <version>1.4-33c62d2</version>
+            <version>1.5-b55710e</version>
         </dependency>
 
         <!--spring-->
