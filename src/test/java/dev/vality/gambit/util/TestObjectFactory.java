@@ -5,7 +5,12 @@ import dev.vality.gambit.domain.tables.pojos.DataLookup;
 import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +18,7 @@ import java.util.List;
 public class TestObjectFactory {
 
     public static final String DATA_SET_INFO_NAME = "alpha_numeric_data_set";
-    public static final String DATA_SET_INFO_HEADERS = "headerOne,headerTwo,headerThree";
+    public static final String DATA_SET_INFO_HEADERS = "h1,h2,h3";
     public static final Integer DATA_SET_INFO_ID = 55;
 
     public static final String DATA_SET_INFO_IP_NAME = "alpha_numeric_ip_data_set";
@@ -57,4 +62,17 @@ public class TestObjectFactory {
         return data;
     }
 
+    public static MultipartFile createMultipartFile(String name) {
+        return createMultipartFile(name, "text/csv");
+    }
+
+    @SneakyThrows
+    public static MultipartFile createMultipartFile(String name, String contentType) {
+        return new MockMultipartFile(
+                name,
+                null,
+                contentType,
+                Files.newInputStream(Path.of("src/test/resources/data_sets/" + name))
+        );
+    }
 }

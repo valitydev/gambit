@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,5 +36,12 @@ public class DataServiceImpl implements DataService {
     public Long getRandomDataId(Integer dataSetInfoId) {
         log.debug("Querying random data id for dataSetInfoId: {}", dataSetInfoId);
         return dataDao.getRandomDataId(dataSetInfoId);
+    }
+
+    @Override
+    public Map<String, Data> getByDataSetInfoAndValuesHashes(Integer dataSetInfoId, Set<String> valuesHashes) {
+        log.debug("Querying data with dataSetInfoId: {} and hashes: {}", dataSetInfoId, valuesHashes);
+        return dataDao.getByDataSetInfoAndValuesHashes(dataSetInfoId, valuesHashes).stream()
+                .collect(Collectors.toMap(Data::getValuesHash, data -> data));
     }
 }
