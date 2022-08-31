@@ -11,6 +11,8 @@ import java.util.Objects;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JdbcUtil {
 
+    // TODO: переписать используя DslContext
+
     public static void truncate(JdbcTemplate jdbcTemplate, String table) {
         jdbcTemplate.execute("truncate table gbt." + table);
     }

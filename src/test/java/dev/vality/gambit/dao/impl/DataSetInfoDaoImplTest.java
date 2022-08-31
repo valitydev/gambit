@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,24 +31,25 @@ class DataSetInfoDaoImplTest {
     }
 
     @Test
-    void save() throws DataSetNotFound {
+    void save() {
         DataSetInfo dataSetInfo = TestObjectFactory.createDefaultDataSetInfo();
         dataSetInfoDao.save(dataSetInfo);
-        DataSetInfo actual = dataSetInfoDao.getByName(TestObjectFactory.DATA_SET_INFO_NAME);
-        assertEquals(dataSetInfo, actual);
+        Optional<DataSetInfo> actual = dataSetInfoDao.getByName(TestObjectFactory.DATA_SET_INFO_NAME);
+        assertEquals(dataSetInfo, actual.get());
     }
 
     @Test
-    void getByNameDataSetNotFound() {
-        dataSetInfoDao.save(TestObjectFactory.createDefaultDataSetInfo());
-        assertThrows(DataSetNotFound.class, () -> dataSetInfoDao.getByName("test"));
+    void getByNameNotPresent() {
+        DataSetInfo dataSetInfo = TestObjectFactory.createDefaultDataSetInfo();
+        dataSetInfoDao.save(dataSetInfo);
+        assertEquals(Optional.empty(), dataSetInfoDao.getByName(TestObjectFactory.DATA_SET_INFO_IP_NAME));
     }
 
     @Test
-    void getByName() throws DataSetNotFound {
+    void getByName() {
         DataSetInfo dataSetInfo = TestObjectFactory.createDefaultDataSetInfo();
         dataSetInfoDao.save(dataSetInfo);
-        assertEquals(dataSetInfo, dataSetInfoDao.getByName(TestObjectFactory.DATA_SET_INFO_NAME));
+        assertEquals(dataSetInfo, dataSetInfoDao.getByName(TestObjectFactory.DATA_SET_INFO_NAME).get());
     }
 
     @Test

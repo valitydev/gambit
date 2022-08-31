@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,6 +31,12 @@ public class DataSetInfoServiceImpl implements DataSetInfoService {
         log.debug("Querying for dataSetInfo names: {}", dataSetInfoNames);
         return dataSetInfoDao.getByNames(dataSetInfoNames).stream()
                 .collect(Collectors.toMap(DataSetInfo::getId, dataSetInfo -> dataSetInfo));
+    }
+
+    @Override
+    public Optional<DataSetInfo> getDataSetInfoByName(String dataSetInfoName) {
+        log.debug("Querying for dataSetInfo name: {}", dataSetInfoName);
+        return dataSetInfoDao.getByName(dataSetInfoName);
     }
 
 }

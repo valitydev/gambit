@@ -63,4 +63,12 @@ public class DataDaoImpl extends AbstractGenericDao implements DataDao {
                 .orElseThrow(() -> new NotFoundException("Data entity not found, dataSetInfoId: " + dataSetInfoId));
     }
 
+    @Override
+    public List<Data> getByDataSetInfoAndValuesHashes(Integer dataSetInfoId, Set<String> valuesHashes) {
+        Query query = getDslContext().selectFrom(DATA)
+                .where(DATA.DATA_SET_INFO_ID.eq(dataSetInfoId)
+                        .and(DATA.VALUES_HASH.in(valuesHashes)));
+        return fetch(query, rowMapper);
+    }
+
 }

@@ -46,11 +46,10 @@ public class DataSetInfoDaoImpl extends AbstractGenericDao implements DataSetInf
     }
 
     @Override
-    public DataSetInfo getByName(String name) throws DataSetNotFound {
+    public Optional<DataSetInfo> getByName(String name) {
         Query query = getDslContext().selectFrom(DATA_SET_INFO)
                 .where(DATA_SET_INFO.NAME.eq(name));
-        return Optional.ofNullable(fetchOne(query, rowMapper))
-                .orElseThrow(DataSetNotFound::new);
+        return Optional.ofNullable(fetchOne(query, rowMapper));
     }
 
     @Override

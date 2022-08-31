@@ -13,4 +13,6 @@ public interface DataDao {
 
     Long getRandomDataId(Integer dataSetInfoId);
 
+    List<Data> getByDataSetInfoAndValuesHashes(Integer dataSetInfoId, Set<String> valuesHashes);
+
 }

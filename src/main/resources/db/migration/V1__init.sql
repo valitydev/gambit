@@ -19,8 +19,7 @@ CREATE TABLE gbt.data
 
     CONSTRAINT data_pkey PRIMARY KEY (id)
 );
-CREATE INDEX data_set_info_idx ON gbt.data USING btree (data_set_info_id);
-CREATE INDEX values_hash_idx ON gbt.data USING btree (values_hash);
+CREATE INDEX data_idx ON gbt.data USING btree (data_set_info_id, values_hash);
 
 CREATE TABLE gbt.data_lookup
 (

@@ -1,0 +1,16 @@
+package dev.vality.gambit.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+public class DataEntries {
+
+    List<String> headers;
+
+    List<String> values;
+
+}

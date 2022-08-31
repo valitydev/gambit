@@ -4,19 +4,14 @@ import dev.vality.gambit.DataRequest;
 import dev.vality.gambit.DataResponse;
 import dev.vality.gambit.DataSetNotFound;
 import dev.vality.gambit.annotation.SpringBootPostgresqlTest;
-import dev.vality.gambit.dao.DataDao;
-import dev.vality.gambit.dao.DataLookupDao;
-import dev.vality.gambit.dao.DataSetInfoDao;
 import dev.vality.gambit.domain.tables.pojos.Data;
 import dev.vality.gambit.domain.tables.pojos.DataLookup;
 import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
 import dev.vality.gambit.service.impl.StubDataServiceHandler;
-import dev.vality.gambit.util.JdbcUtil;
 import org.apache.thrift.TException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -28,28 +23,14 @@ import static dev.vality.gambit.util.TestObjectFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootPostgresqlTest
-class StubDataServiceHandlerIntegrationTest {
+class StubDataServiceHandlerIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private StubDataServiceHandler handler;
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private DataDao dataDao;
-
-    @Autowired
-    private DataSetInfoDao dataSetInfoDao;
-
-    @Autowired
-    private DataLookupDao dataLookupDao;
-
     @BeforeEach
     void setUp() {
-        JdbcUtil.truncate(jdbcTemplate, "data");
-        JdbcUtil.truncate(jdbcTemplate, "data_lookup");
-        JdbcUtil.truncate(jdbcTemplate, "data_set_info");
+        cleanUpDb();
     }
 
     @Test
@@ -95,9 +76,9 @@ class StubDataServiceHandlerIntegrationTest {
                 dataLookupDao.getDataLookups(Set.of(DATA_SET_INFO_ID, DATA_SET_INFO_IP_ID), hash);
         assertEquals(preparedDataLookups, actualDataLookups);
         Map<String, String> expected = Map.of(
-                "headerOne", "uno",
-                "headerTwo", "dos",
-                "headerThree", "tres",
+                "h1", "uno",
+                "h2", "dos",
+                "h3", "tres",
                 "ip", "127.212.54.3"
         );
         assertEquals(expected, actual.getData());
@@ -124,9 +105,9 @@ class StubDataServiceHandlerIntegrationTest {
                 .setLookupKey(hash)
         );
         Map<String, String> expected = Map.of(
-                "headerOne", "uno",
-                "headerTwo", "dos",
-                "headerThree", "tres",
+                "h1", "uno",
+                "h2", "dos",
+                "h3", "tres",
                 "ip", "127.212.54.3"
         );
         assertEquals(expected, actual.getData());
@@ -157,25 +138,12 @@ class StubDataServiceHandlerIntegrationTest {
                 .setLookupKey(hash)
         );
         Map<String, String> expected = Map.of(
-                "headerOne", "uno",
-                "headerTwo", "dos",
-                "headerThree", "tres"
+                "h1", "uno",
+                "h2", "dos",
+                "h3", "tres"
         );
         assertEquals(expected, actual.getData());
         assertNotNull(dataLookupDao.getDataLookups(Set.of(DATA_SET_INFO_ID), hash));
-    }
-
-
-    private void fillDb(List<DataSetInfo> dataSetInfos, List<Data> dataList, Set<DataLookup> dataLookups) {
-        if (!CollectionUtils.isEmpty(dataSetInfos)) {
-            dataSetInfos.forEach(dataSetInfo -> dataSetInfoDao.save(dataSetInfo));
-        }
-        if (!CollectionUtils.isEmpty(dataList)) {
-            dataDao.saveBatch(dataList);
-        }
-        if (!CollectionUtils.isEmpty(dataLookups)) {
-            dataLookupDao.saveBatch(dataLookups);
-        }
     }
 
 }

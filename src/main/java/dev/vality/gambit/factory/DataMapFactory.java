@@ -1,5 +1,6 @@
 package dev.vality.gambit.factory;
 
+import dev.vality.gambit.util.Constants;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,15 +13,13 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DataMapFactory {
 
-    private static final String SEPARATOR = ",";
-
     public static Map<String, String> createDataMap(String headers, String values) {
         if (!StringUtils.hasLength(headers) || !StringUtils.hasLength(values)) {
             log.error("Headers or values cannot be empty. headers: {}, values {}", headers, values);
             throw new IllegalArgumentException();
         }
-        String[] splitHeaders = headers.split(SEPARATOR);
-        String[] splitValues = values.split(SEPARATOR);
+        String[] splitHeaders = headers.split(Constants.SEPARATOR);
+        String[] splitValues = values.split(Constants.SEPARATOR);
         if (splitValues.length != splitHeaders.length) {
             log.error("Error during split. headers: {}, values {}", splitHeaders, splitValues);
             throw new IllegalArgumentException();
