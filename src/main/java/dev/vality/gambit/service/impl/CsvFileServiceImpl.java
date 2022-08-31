@@ -1,7 +1,7 @@
 package dev.vality.gambit.service.impl;
 
 import dev.vality.gambit.model.DataEntries;
-import dev.vality.gambit.service.CsvService;
+import dev.vality.gambit.service.FileService;
 import dev.vality.gambit.util.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class CsvServiceImpl implements CsvService {
+public class CsvFileServiceImpl implements FileService {
 
     private static final String FILE_TYPE = "text/csv";
 

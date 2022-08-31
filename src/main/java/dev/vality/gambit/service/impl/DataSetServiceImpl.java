@@ -6,7 +6,7 @@ import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
 import dev.vality.gambit.exception.DataSetInfoAlreadyExistException;
 import dev.vality.gambit.factory.DataFactory;
 import dev.vality.gambit.model.DataEntries;
-import dev.vality.gambit.service.CsvService;
+import dev.vality.gambit.service.FileService;
 import dev.vality.gambit.service.DataService;
 import dev.vality.gambit.service.DataSetInfoService;
 import dev.vality.gambit.service.DataSetService;
@@ -35,14 +35,14 @@ public class DataSetServiceImpl implements DataSetService {
 
     private final DataSetInfoService dataSetInfoService;
 
-    private final CsvService csvService;
+    private final FileService fileService;
 
     @Transactional
     @Override
     public void createDataSet(String dataSetName, MultipartFile file) {
         dataSetInfoService.getDataSetInfoByName(dataSetName)
                 .ifPresent(throwDataSetInfoAlreadyExist());
-        DataEntries dataEntries = csvService.process(file);
+        DataEntries dataEntries = fileService.process(file);
         Integer dataSetInfoId = dataSetInfoService.createDataSetInfo(
                 new DataSetInfo(null, dataSetName, String.join(Constants.SEPARATOR, dataEntries.getHeaders())));
         dataService.saveDataBatch(dataEntries.getValues().stream()
@@ -57,7 +57,7 @@ public class DataSetServiceImpl implements DataSetService {
         DataSetInfo dataSetInfo = dataSetInfoService.getDataSetInfoByName(dataSetName)
                 .orElseThrow(DataSetNotFound::new);
         List<String> existingHeaders = Arrays.asList(dataSetInfo.getHeaders().split(Constants.SEPARATOR));
-        DataEntries dataEntries = csvService.process(file, existingHeaders);
+        DataEntries dataEntries = fileService.process(file, existingHeaders);
         Map<String, Data> data = dataEntries.getValues().stream()
                 .map(value -> DataFactory.create(dataSetInfo.getId(), value))
                 .collect(Collectors.toMap(Data::getValuesHash, entry -> entry));

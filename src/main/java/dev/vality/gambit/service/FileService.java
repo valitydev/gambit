@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-public interface CsvService {
+public interface FileService {
 
     DataEntries process(MultipartFile file);
 
