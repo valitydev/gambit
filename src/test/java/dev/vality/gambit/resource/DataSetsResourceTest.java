@@ -44,7 +44,7 @@ class DataSetsResourceTest {
 
     @Test
     void createDataSetDataSetInfoAlreadyExistException() {
-        doThrow(new DataSetInfoAlreadyExistException())
+        doThrow(new DataSetInfoAlreadyExistException(TestObjectFactory.DATA_SET_INFO_NAME))
                 .when(dataSetService)
                 .createDataSet(TestObjectFactory.DATA_SET_INFO_NAME, file);
         ResponseEntity<Void> response = resource.createDataSet(TestObjectFactory.DATA_SET_INFO_NAME, file);
