@@ -1,5 +1,27 @@
 server:
   port: '@server.port@'
+  rest:
+    port: '@server.rest.port@'
+
+spring:
+  application:
+    name: '@project.name@'
+  output:
+    ansi:
+      enabled: always
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/gambit
+    username: postgres
+    password: postgres
+    hikari:
+      idle-timeout: 30000
+      maximum-pool-size: 10
+      data-source-properties:
+        reWriteBatchedInserts: true
+  flyway:
+    schemas: gbt
 
 management:
   security:
@@ -23,15 +45,6 @@ management:
     web:
       exposure:
         include: health,info,prometheus
-
-spring:
-  application:
-    name: '@project.name@'
-  output:
-    ansi:
-      enabled: always
-  flyway:
-    schemas: gbt
 
 
 info:
