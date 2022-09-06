@@ -2,6 +2,7 @@ package dev.vality.gambit.service.impl;
 
 import dev.vality.gambit.DataRequest;
 import dev.vality.gambit.DataResponse;
+import dev.vality.gambit.DataSetNotFound;
 import dev.vality.gambit.StubDataServiceSrv;
 import dev.vality.gambit.factory.DataMapFactory;
 import dev.vality.gambit.domain.tables.pojos.DataLookup;
@@ -35,19 +36,24 @@ public class StubDataServiceHandler implements StubDataServiceSrv.Iface {
     public DataResponse getData(DataRequest dataRequest) throws TException {
         log.debug("Received request: {}", dataRequest);
         validateRequest(dataRequest);
-        Map<Integer, DataSetInfo> dataSetInfos =
-                dataSetInfoService.getDataSetInfoByNames(dataRequest.getDataSetsNames());
+        Map<Integer, DataSetInfo> dataSetInfos = getDataSetInfos(dataRequest);
         Set<Long> dataIds = getDataIds(dataRequest, dataSetInfos);
         Map<String, String> mergedDataMap = getDataMapByDataIds(dataSetInfos, dataIds);
         log.debug("Result map: {}", mergedDataMap);
         return new DataResponse(mergedDataMap);
     }
 
-
     private void validateRequest(DataRequest dataRequest) {
         if (CollectionUtils.isEmpty(dataRequest.getDataSetsNames())) {
             throw new IllegalStateException("Empty data set names list");
         }
+    }
+
+    private Map<Integer, DataSetInfo> getDataSetInfos(DataRequest dataRequest) throws DataSetNotFound {
+        return dataSetInfoService.getDataSetInfoByNames(dataRequest.getDataSetsNames().stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet())
+        );
     }
 
     private Set<Long> getDataIds(DataRequest dataRequest, Map<Integer, DataSetInfo> dataSetInfos) {

@@ -35,17 +35,17 @@ public class CsvFileServiceImpl implements FileService {
         validateFileType(file);
         try (BufferedReader bf = createBufferedReader(file)) {
             List<String> headers = getHeaders(bf, existingHeaders);
-            List<String> values = getValues(bf, headers, file.getName());
+            List<String> values = getValues(bf, headers, file.getOriginalFilename());
             return new DataEntries(headers, values);
         } catch (IOException e) {
-            log.error("Error during file processing. file: {}.", file.getName());
+            log.error("Error during file processing. file: {}.", file.getOriginalFilename());
             throw new RuntimeException(e);
         }
     }
 
     private void validateFileType(MultipartFile file) {
         if (!FILE_TYPE.equals(file.getContentType())) {
-            log.error("File {} has incorrect content type {}", file.getName(), file.getContentType());
+            log.error("File {} has incorrect content type {}", file.getOriginalFilename(), file.getContentType());
             throw new IllegalArgumentException();
         }
     }

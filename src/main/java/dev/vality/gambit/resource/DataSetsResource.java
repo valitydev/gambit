@@ -25,9 +25,9 @@ public class DataSetsResource implements DataSetsApi {
             @NotNull @Valid String dataSetName,
             @NotNull @Valid MultipartFile file
     ) {
-        log.info("createDataSet request: dataSetName {}, file {}", dataSetName, file.getName());
+        log.info("createDataSet request: dataSetName {}, file {}", dataSetName, file.getOriginalFilename());
         try {
-            dataSetService.createDataSet(dataSetName, file);
+            dataSetService.createDataSet(dataSetName.toLowerCase(), file);
         } catch (IllegalArgumentException | DataSetInfoAlreadyExistException e) {
             return ResponseEntity.badRequest().build();
         }
@@ -40,9 +40,9 @@ public class DataSetsResource implements DataSetsApi {
             @NotNull @Valid String dataSetName,
             @NotNull @Valid MultipartFile file
     ) {
-        log.info("updateDataSet request: dataSetName {}, file {}", dataSetName, file.getName());
+        log.info("updateDataSet request: dataSetName {}, file {}", dataSetName, file.getOriginalFilename());
         try {
-            dataSetService.updateDataSet(dataSetName, file);
+            dataSetService.updateDataSet(dataSetName.toLowerCase(), file);
         } catch (IllegalArgumentException | DataSetNotFound e) {
             return ResponseEntity.badRequest().build();
         }
