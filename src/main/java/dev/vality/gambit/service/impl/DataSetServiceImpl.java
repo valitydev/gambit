@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
@@ -35,8 +36,7 @@ public class DataSetServiceImpl implements DataSetService {
     @Transactional
     @Override
     public void createDataSet(String dataSetName, MultipartFile file) {
-        dataSetInfoService.getDataSetInfoByName(dataSetName)
-                .ifPresent(throwDataSetInfoAlreadyExist());
+        validateDataSetNameRequest(dataSetName);
         DataEntries dataEntries = fileService.process(file);
         Integer dataSetInfoId = dataSetInfoService.createDataSetInfo(
                 new DataSetInfo(null, dataSetName, String.join(Constants.SEPARATOR, dataEntries.getHeaders())));
@@ -55,6 +55,15 @@ public class DataSetServiceImpl implements DataSetService {
         dataService.saveDataBatch(dataEntries.getValues().stream()
                 .map(value -> DataFactory.create(dataSetInfo.getId(), value))
                 .collect(Collectors.toList()));
+    }
+
+    private void validateDataSetNameRequest(String dataSetName) {
+        if (!StringUtils.hasText(dataSetName)) {
+            log.error("Invalid dataSetName `{}`", dataSetName);
+            throw new IllegalArgumentException();
+        }
+        dataSetInfoService.getDataSetInfoByName(dataSetName)
+                .ifPresent(throwDataSetInfoAlreadyExist());
     }
 
     private Consumer<DataSetInfo> throwDataSetInfoAlreadyExist() {
