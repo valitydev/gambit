@@ -69,9 +69,7 @@ class DataDaoImplTest {
 
     @Test
     void getRandomDataIdSingleEntity() {
-        dataDao.saveBatch(List.of(
-                new Data(55L, TestObjectFactory.DATA_SET_INFO_ID, "55", "55")
-        ));
+        dataDao.saveBatch(List.of(new Data(55L, TestObjectFactory.DATA_SET_INFO_ID, "55")));
         Long randomDataId = dataDao.getRandomDataId(TestObjectFactory.DATA_SET_INFO_ID);
         assertEquals(55L, randomDataId);
     }
@@ -116,27 +114,4 @@ class DataDaoImplTest {
         randomIds.forEach(randomId -> assertTrue(0 <= randomId && randomId <= dataSetsCount * entriesPerDataSet));
     }
 
-    @Test
-    void getByDataSetInfoAndValuesHashesNoEntries() {
-        List<Data> testData = TestObjectFactory.createDataList(TestObjectFactory.DATA_SET_INFO_ID, 50);
-        dataDao.saveBatch(testData);
-        Set<String> hashes = testData.subList(0, 5).stream()
-                .map(Data::getValuesHash)
-                .collect(Collectors.toSet());
-        List<Data> actual = dataDao.getByDataSetInfoAndValuesHashes(TestObjectFactory.DATA_SET_INFO_IP_ID, hashes);
-        assertNotNull(actual);
-        assertTrue(actual.isEmpty());
-    }
-
-    @Test
-    void getByDataSetInfoAndValuesHashes() {
-        List<Data> testData = TestObjectFactory.createDataList(TestObjectFactory.DATA_SET_INFO_ID, 50);
-        dataDao.saveBatch(testData);
-        List<Data> expected = testData.subList(0, 5);
-        Set<String> hashes = expected.stream()
-                .map(Data::getValuesHash)
-                .collect(Collectors.toSet());
-        List<Data> actual = dataDao.getByDataSetInfoAndValuesHashes(TestObjectFactory.DATA_SET_INFO_ID, hashes);
-        assertEquals(expected, actual);
-    }
 }

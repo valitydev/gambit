@@ -14,6 +14,4 @@ public interface DataService {
 
     Long getRandomDataId(Integer dataSetInfoId);
 
-    Map<String, Data> getByDataSetInfoAndValuesHashes(Integer dataSetInfoId, Set<String> valuesHashes);
-
 }

@@ -38,10 +38,4 @@ public class DataServiceImpl implements DataService {
         return dataDao.getRandomDataId(dataSetInfoId);
     }
 
-    @Override
-    public Map<String, Data> getByDataSetInfoAndValuesHashes(Integer dataSetInfoId, Set<String> valuesHashes) {
-        log.debug("Querying data with dataSetInfoId: {} and hashes: {}", dataSetInfoId, valuesHashes);
-        return dataDao.getByDataSetInfoAndValuesHashes(dataSetInfoId, valuesHashes).stream()
-                .collect(Collectors.toMap(Data::getValuesHash, data -> data));
-    }
 }

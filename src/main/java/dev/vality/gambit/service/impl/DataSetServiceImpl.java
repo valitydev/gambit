@@ -1,7 +1,6 @@
 package dev.vality.gambit.service.impl;
 
 import dev.vality.gambit.DataSetNotFound;
-import dev.vality.gambit.domain.tables.pojos.Data;
 import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
 import dev.vality.gambit.exception.DataSetInfoAlreadyExistException;
 import dev.vality.gambit.factory.DataFactory;
@@ -15,15 +14,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -40,15 +36,13 @@ public class DataSetServiceImpl implements DataSetService {
     @Transactional
     @Override
     public void createDataSet(String dataSetName, MultipartFile file) {
-        dataSetInfoService.getDataSetInfoByName(dataSetName)
-                .ifPresent(throwDataSetInfoAlreadyExist());
+        validateDataSetNameRequest(dataSetName);
         DataEntries dataEntries = fileService.process(file);
         Integer dataSetInfoId = dataSetInfoService.createDataSetInfo(
                 new DataSetInfo(null, dataSetName, String.join(Constants.SEPARATOR, dataEntries.getHeaders())));
         dataService.saveDataBatch(dataEntries.getValues().stream()
                 .map(value -> DataFactory.create(dataSetInfoId, value))
-                .collect(Collectors.toList())
-        );
+                .collect(Collectors.toList()));
     }
 
     @Transactional
@@ -58,11 +52,18 @@ public class DataSetServiceImpl implements DataSetService {
                 .orElseThrow(DataSetNotFound::new);
         List<String> existingHeaders = Arrays.asList(dataSetInfo.getHeaders().split(Constants.SEPARATOR));
         DataEntries dataEntries = fileService.process(file, existingHeaders);
-        Map<String, Data> data = dataEntries.getValues().stream()
+        dataService.saveDataBatch(dataEntries.getValues().stream()
                 .map(value -> DataFactory.create(dataSetInfo.getId(), value))
-                .collect(Collectors.toMap(Data::getValuesHash, entry -> entry));
-        removeDuplicateData(dataSetInfo, data);
-        dataService.saveDataBatch(new ArrayList<>(data.values()));
+                .collect(Collectors.toList()));
+    }
+
+    private void validateDataSetNameRequest(String dataSetName) {
+        if (!StringUtils.hasText(dataSetName)) {
+            log.error("Invalid dataSetName `{}`", dataSetName);
+            throw new IllegalArgumentException();
+        }
+        dataSetInfoService.getDataSetInfoByName(dataSetName)
+                .ifPresent(throwDataSetInfoAlreadyExist());
     }
 
     private Consumer<DataSetInfo> throwDataSetInfoAlreadyExist() {
@@ -70,19 +71,6 @@ public class DataSetServiceImpl implements DataSetService {
             log.error("Data set info already exists. dataSetInfo:{}", dataSetInfo);
             throw new DataSetInfoAlreadyExistException(dataSetInfo.getName());
         };
-    }
-
-    private void removeDuplicateData(DataSetInfo dataSetInfo, Map<String, Data> inputData) {
-        Map<String, Data> alreadyExistingData =
-                dataService.getByDataSetInfoAndValuesHashes(dataSetInfo.getId(), inputData.keySet());
-        if (!CollectionUtils.isEmpty(alreadyExistingData)) {
-            inputData.keySet().removeIf(isDuplicatedData(inputData, alreadyExistingData));
-        }
-    }
-
-    private Predicate<String> isDuplicatedData(Map<String, Data> inputData, Map<String, Data> alreadyExistingData) {
-        return key -> alreadyExistingData.containsKey(key)
-                && inputData.get(key).getValues().equals(alreadyExistingData.get(key).getValues());
     }
 
 }

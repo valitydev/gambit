@@ -58,8 +58,8 @@ class StubDataServiceHandlerIntegrationTest extends AbstractIntegrationTest {
         fillDb(
                 List.of(createDefaultDataSetInfo(),
                         new DataSetInfo(DATA_SET_INFO_IP_ID, DATA_SET_INFO_IP_NAME, DATA_SET_INFO_IP_HEADERS)),
-                List.of(new Data(1L, DATA_SET_INFO_ID, "uno,dos,tres", "hash!"),
-                        new Data(2L, DATA_SET_INFO_IP_ID, "127.212.54.3", "хеш!")),
+                List.of(new Data(1L, DATA_SET_INFO_ID, "uno,dos,tres"),
+                        new Data(2L, DATA_SET_INFO_IP_ID, "127.212.54.3")),
                 Set.of(firstDataLookup, secondDataLookup)
         );
         List<DataLookup> preparedDataLookups =
@@ -91,8 +91,8 @@ class StubDataServiceHandlerIntegrationTest extends AbstractIntegrationTest {
         fillDb(
                 List.of(createDefaultDataSetInfo(),
                         new DataSetInfo(DATA_SET_INFO_IP_ID, DATA_SET_INFO_IP_NAME, DATA_SET_INFO_IP_HEADERS)),
-                List.of(new Data(1L, DATA_SET_INFO_ID, "uno,dos,tres", "hash!"),
-                        new Data(2L, DATA_SET_INFO_IP_ID, "127.212.54.3", "хеш!")),
+                List.of(new Data(1L, DATA_SET_INFO_ID, "uno,dos,tres"),
+                        new Data(2L, DATA_SET_INFO_IP_ID, "127.212.54.3")),
                 Set.of(firstDataLookup)
         );
         List<DataLookup> preparedDataLookups =
