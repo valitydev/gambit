@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -35,7 +36,7 @@ public class CsvFileServiceImpl implements FileService {
         validateFileType(file);
         try (BufferedReader bf = createBufferedReader(file)) {
             List<String> headers = getHeaders(bf, existingHeaders);
-            List<String> values = getValues(bf, headers, file.getOriginalFilename());
+            Set<String> values = getValues(bf, headers, file.getOriginalFilename());
             return new DataEntries(headers, values);
         } catch (IOException e) {
             log.error("Error during file processing. file: {}.", file.getOriginalFilename());
@@ -67,10 +68,10 @@ public class CsvFileServiceImpl implements FileService {
         return inputHeaders;
     }
 
-    private List<String> getValues(BufferedReader bf, List<String> headers, String fileName) {
-        List<String> values = bf.lines()
+    private Set<String> getValues(BufferedReader bf, List<String> headers, String fileName) {
+        Set<String> values = bf.lines()
                 .map(line -> validateAndTrimValues(line, headers.size()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
         if (CollectionUtils.isEmpty(values)) {
             log.error("No values for file: {}", fileName);
             throw new IllegalArgumentException();

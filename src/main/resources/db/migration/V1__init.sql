@@ -15,11 +15,10 @@ CREATE TABLE gbt.data
     id                  bigserial       NOT NULL,
     data_set_info_id    integer         NOT NULL,
     values              varchar         NOT NULL,
-    values_hash         varchar         NOT NULL,
 
     CONSTRAINT data_pkey PRIMARY KEY (id)
 );
-CREATE INDEX data_idx ON gbt.data USING btree (data_set_info_id, values_hash);
+CREATE UNIQUE INDEX data_idx ON gbt.data USING btree (data_set_info_id, md5("values"));
 
 CREATE TABLE gbt.data_lookup
 (

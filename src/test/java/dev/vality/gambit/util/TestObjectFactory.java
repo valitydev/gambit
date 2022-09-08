@@ -49,7 +49,7 @@ public class TestObjectFactory {
     public static List<Data> createDataList(Integer dataSetInfoId, int count) {
         List<Data> dataList = new ArrayList<>();
         for (int i = 1; i <= count; i++) {
-            dataList.add(new Data((long) i, dataSetInfoId, i + ",b,c", i + "_hash"));
+            dataList.add(new Data((long) i, dataSetInfoId, i + ",b,c"));
         }
         return dataList;
     }
@@ -58,7 +58,6 @@ public class TestObjectFactory {
         var data = new Data();
         data.setDataSetInfoId(dataSetInfoId);
         data.setValues(values);
-        data.setValuesHash(valuesHash);
         return data;
     }
 

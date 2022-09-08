@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.util.DigestUtils;
 
 import java.util.HashSet;
 import java.util.List;
@@ -232,14 +231,13 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
     }
 
     private Data createExpectedData(Integer dataSetInfoId, String value) {
-        return new Data(null, dataSetInfoId, value, DigestUtils.md5DigestAsHex(value.getBytes()));
+        return new Data(null, dataSetInfoId, value);
     }
 
     private void assertData(Data expected, Data actual) {
         assertNotNull(actual.getId());
         assertEquals(expected.getDataSetInfoId(), actual.getDataSetInfoId());
         assertEquals(expected.getValues(), actual.getValues());
-        assertEquals(expected.getValuesHash(), actual.getValuesHash());
     }
 
 }

@@ -15,6 +15,5 @@ class DataFactoryTest {
         assertNull(actual.getId());
         assertEquals(dataSetInfoId, actual.getDataSetInfoId());
         assertEquals(value, actual.getValues());
-        assertEquals("934783b759dcf9bd64612feb79653609", actual.getValuesHash());
     }
 }

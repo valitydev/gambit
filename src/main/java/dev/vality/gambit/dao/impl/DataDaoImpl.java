@@ -38,7 +38,10 @@ public class DataDaoImpl extends AbstractGenericDao implements DataDao {
     public void saveBatch(List<Data> batch) {
         List<Query> queries = batch.stream()
                 .map(data -> getDslContext().newRecord(DATA, data))
-                .map(dataRecord -> getDslContext().insertInto(DATA).set(dataRecord))
+                .map(dataRecord -> getDslContext().insertInto(DATA).set(dataRecord)
+                        .onConflict(DATA.DATA_SET_INFO_ID, DSL.md5(DATA.VALUES))
+                        .doNothing()
+                )
                 .collect(Collectors.toList());
         batchExecute(queries);
     }
@@ -61,14 +64,6 @@ public class DataDaoImpl extends AbstractGenericDao implements DataDao {
                 .limit(1);
         return Optional.ofNullable(fetchOne(query, idRowMapper))
                 .orElseThrow(() -> new NotFoundException("Data entity not found, dataSetInfoId: " + dataSetInfoId));
-    }
-
-    @Override
-    public List<Data> getByDataSetInfoAndValuesHashes(Integer dataSetInfoId, Set<String> valuesHashes) {
-        Query query = getDslContext().selectFrom(DATA)
-                .where(DATA.DATA_SET_INFO_ID.eq(dataSetInfoId)
-                        .and(DATA.VALUES_HASH.in(valuesHashes)));
-        return fetch(query, rowMapper);
     }
 
 }
