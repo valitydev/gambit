@@ -4,8 +4,6 @@ import dev.vality.gambit.DataSetNotFound;
 import dev.vality.gambit.exception.DataSetInfoAlreadyExistException;
 import dev.vality.gambit.service.DataSetService;
 import dev.vality.openapi.gambit.api.DataSetsApi;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.validation.Valid;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,10 +22,7 @@ public class DataSetsResource implements DataSetsApi {
     private final DataSetService dataSetService;
 
     @Override
-    public ResponseEntity<Void> createDataSet(
-            @NotNull @Valid String dataSetName,
-            @NotNull @Valid MultipartFile file
-    ) {
+    public ResponseEntity<Void> createDataSet(@Valid String dataSetName, @Valid MultipartFile file) {
         try {
             validateRequest(dataSetName, file);
             log.info("createDataSet request: dataSetName {}, file {}", dataSetName, file.getOriginalFilename());
@@ -38,10 +35,7 @@ public class DataSetsResource implements DataSetsApi {
     }
 
     @Override
-    public ResponseEntity<Void> updateDataSet(
-            @NotNull @Valid String dataSetName,
-            @NotNull @Valid MultipartFile file
-    ) {
+    public ResponseEntity<Void> updateDataSet(@Valid String dataSetName, @Valid MultipartFile file) {
         try {
             validateRequest(dataSetName, file);
             log.info("updateDataSet request: dataSetName {}, file {}", dataSetName, file.getOriginalFilename());
