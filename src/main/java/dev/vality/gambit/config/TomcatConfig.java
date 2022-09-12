@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class TomcatConfiguration {
+public class TomcatConfig {
 
     @Value("${server.rest.port}")
     private int restPort;

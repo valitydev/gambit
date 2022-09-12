@@ -1,43 +1,34 @@
 package dev.vality.gambit.integration;
 
 import dev.vality.gambit.DataSetNotFound;
-import dev.vality.gambit.annotation.SpringBootPostgresqlTest;
+import dev.vality.gambit.domain.Tables;
 import dev.vality.gambit.domain.tables.pojos.Data;
 import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
 import dev.vality.gambit.exception.DataSetInfoAlreadyExistException;
 import dev.vality.gambit.service.impl.DataSetServiceImpl;
-import dev.vality.gambit.util.JdbcUtil;
 import dev.vality.gambit.util.TestObjectFactory;
+import dev.vality.mapper.RecordRowMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootPostgresqlTest
 public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private DataSetServiceImpl service;
 
-    @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
-
-    private final Set<Long> allIdsRange = new HashSet<>();
+    private final RowMapper<Data> rowMapper = new RecordRowMapper<>(Tables.DATA, Data.class);
 
     @BeforeEach
     void setUp() {
         cleanUpDb();
         assertDataBaseCounts(0, 0);
-        for (int i = 1; i < 1_000; i++) {
-            allIdsRange.add((long) i);
-        }
     }
 
     @Test
@@ -47,17 +38,7 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
                 DataSetInfoAlreadyExistException.class,
                 () -> service.createDataSet(
                         TestObjectFactory.DATA_SET_INFO_NAME,
-                        TestObjectFactory.createMultipartFile("create.csv"))
-        );
-    }
-
-    @Test
-    void createDataSetWrongContentType() {
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> service.createDataSet(
-                        TestObjectFactory.DATA_SET_INFO_NAME,
-                        TestObjectFactory.createMultipartFile("create.csv", "application/json"))
+                        TestObjectFactory.createBufferedReader("create.csv"))
         );
     }
 
@@ -67,7 +48,7 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
                 IllegalArgumentException.class,
                 () -> service.createDataSet(
                         TestObjectFactory.DATA_SET_INFO_NAME,
-                        TestObjectFactory.createMultipartFile("empty.csv"))
+                        TestObjectFactory.createBufferedReader("empty.csv"))
         );
     }
 
@@ -77,7 +58,7 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
                 IllegalArgumentException.class,
                 () -> service.createDataSet(
                         TestObjectFactory.DATA_SET_INFO_NAME,
-                        TestObjectFactory.createMultipartFile("headers_only.csv"))
+                        TestObjectFactory.createBufferedReader("headers_only.csv"))
         );
     }
 
@@ -87,7 +68,7 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
                 IllegalArgumentException.class,
                 () -> service.createDataSet(
                         TestObjectFactory.DATA_SET_INFO_NAME,
-                        TestObjectFactory.createMultipartFile("create_invalid_value.csv"))
+                        TestObjectFactory.createBufferedReader("create_invalid_value.csv"))
         );
     }
 
@@ -95,7 +76,7 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
     void createDataSet() {
         service.createDataSet(
                 TestObjectFactory.DATA_SET_INFO_NAME,
-                TestObjectFactory.createMultipartFile("create.csv")
+                TestObjectFactory.createBufferedReader("create.csv")
         );
 
         assertDataBaseCounts(1, 2);
@@ -104,7 +85,7 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
         assertEquals(TestObjectFactory.DATA_SET_INFO_NAME, actualDataSetInfo.getName());
         assertEquals(TestObjectFactory.DATA_SET_INFO_HEADERS, actualDataSetInfo.getHeaders());
 
-        List<Data> actualData = dataDao.getDataByIds(allIdsRange);
+        List<Data> actualData = dataDao.fetch(dslContext.selectFrom(Tables.DATA), rowMapper);
         assertEquals(2, actualData.size());
         Map<String, Data> expected = Map.of(
                 "uno,dos,tres", createExpectedData(actualDataSetInfo.getId(), "uno,dos,tres"),
@@ -119,22 +100,7 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
                 DataSetNotFound.class,
                 () -> service.updateDataSet(
                         TestObjectFactory.DATA_SET_INFO_NAME,
-                        TestObjectFactory.createMultipartFile("update.csv"))
-        );
-    }
-
-    @Test
-    void updateDataSetWrongContentType() {
-        // TODO: переписать используя DslContext
-        service.createDataSet(
-                TestObjectFactory.DATA_SET_INFO_NAME,
-                TestObjectFactory.createMultipartFile("create.csv")
-        );
-        assertThrows(
-                IllegalArgumentException.class,
-                () -> service.updateDataSet(
-                        TestObjectFactory.DATA_SET_INFO_NAME,
-                        TestObjectFactory.createMultipartFile("update.csv", "application/json"))
+                        TestObjectFactory.createBufferedReader("update.csv"))
         );
     }
 
@@ -142,13 +108,13 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
     void updateDataSetEmptyFile() {
         service.createDataSet(
                 TestObjectFactory.DATA_SET_INFO_NAME,
-                TestObjectFactory.createMultipartFile("create.csv")
+                TestObjectFactory.createBufferedReader("create.csv")
         );
         assertThrows(
                 IllegalArgumentException.class,
                 () -> service.updateDataSet(
                         TestObjectFactory.DATA_SET_INFO_NAME,
-                        TestObjectFactory.createMultipartFile("empty.csv"))
+                        TestObjectFactory.createBufferedReader("empty.csv"))
         );
     }
 
@@ -156,13 +122,13 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
     void updateDataSetHeadersOnlyFile() {
         service.createDataSet(
                 TestObjectFactory.DATA_SET_INFO_NAME,
-                TestObjectFactory.createMultipartFile("create.csv")
+                TestObjectFactory.createBufferedReader("create.csv")
         );
         assertThrows(
                 IllegalArgumentException.class,
                 () -> service.updateDataSet(
                         TestObjectFactory.DATA_SET_INFO_NAME,
-                        TestObjectFactory.createMultipartFile("headers_only.csv"))
+                        TestObjectFactory.createBufferedReader("headers_only.csv"))
         );
     }
 
@@ -170,13 +136,13 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
     void updateDataInvalidHeaders() {
         service.createDataSet(
                 TestObjectFactory.DATA_SET_INFO_NAME,
-                TestObjectFactory.createMultipartFile("create.csv")
+                TestObjectFactory.createBufferedReader("create.csv")
         );
         assertThrows(
                 IllegalArgumentException.class,
                 () -> service.updateDataSet(
                         TestObjectFactory.DATA_SET_INFO_NAME,
-                        TestObjectFactory.createMultipartFile("update_invalid_value.csv"))
+                        TestObjectFactory.createBufferedReader("update_invalid_value.csv"))
         );
     }
 
@@ -184,13 +150,13 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
     void updateDataSetInvalidValue() {
         service.createDataSet(
                 TestObjectFactory.DATA_SET_INFO_NAME,
-                TestObjectFactory.createMultipartFile("create.csv")
+                TestObjectFactory.createBufferedReader("create.csv")
         );
         assertThrows(
                 IllegalArgumentException.class,
                 () -> service.updateDataSet(
                         TestObjectFactory.DATA_SET_INFO_NAME,
-                        TestObjectFactory.createMultipartFile("update_invalid_value.csv"))
+                        TestObjectFactory.createBufferedReader("update_invalid_value.csv"))
         );
     }
 
@@ -198,13 +164,13 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
     void updateDataSet() throws DataSetNotFound {
         service.createDataSet(
                 TestObjectFactory.DATA_SET_INFO_IP_NAME,
-                TestObjectFactory.createMultipartFile("ip_create.csv")
+                TestObjectFactory.createBufferedReader("ip_create.csv")
         );
         assertDataBaseCounts(1, 3);
 
         service.updateDataSet(
                 TestObjectFactory.DATA_SET_INFO_IP_NAME,
-                TestObjectFactory.createMultipartFile("ip_update.csv")
+                TestObjectFactory.createBufferedReader("ip_update.csv")
         );
         assertDataBaseCounts(1, 4);
 
@@ -213,7 +179,7 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
         assertEquals(TestObjectFactory.DATA_SET_INFO_IP_NAME, actualDataSetInfo.getName());
         assertEquals(TestObjectFactory.DATA_SET_INFO_IP_HEADERS, actualDataSetInfo.getHeaders());
 
-        List<Data> actualData = dataDao.getDataByIds(allIdsRange);
+        List<Data> actualData = dataDao.fetch(dslContext.selectFrom(Tables.DATA), rowMapper);
         assertEquals(4, actualData.size());
         Map<String, Data> expected = Map.of(
                 "127.0.0.1", createExpectedData(actualDataSetInfo.getId(), "127.0.0.1"),
@@ -222,12 +188,6 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
                 "17.22.4.1", createExpectedData(actualDataSetInfo.getId(), "17.22.4.1")
         );
         actualData.forEach(actual -> assertData(expected.get(actual.getValues()), actual));
-    }
-
-    private void assertDataBaseCounts(int dataSetInfoCount, int dataCount) {
-        assertEquals(0, JdbcUtil.count(jdbcTemplate, "data_lookup"));
-        assertEquals(dataSetInfoCount, JdbcUtil.count(jdbcTemplate, "data_set_info"));
-        assertEquals(dataCount, JdbcUtil.count(jdbcTemplate, "data"));
     }
 
     private Data createExpectedData(Integer dataSetInfoId, String value) {

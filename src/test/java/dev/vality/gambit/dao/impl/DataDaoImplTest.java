@@ -1,16 +1,17 @@
 package dev.vality.gambit.dao.impl;
 
 import dev.vality.gambit.annotation.SpringBootPostgresqlTest;
+import dev.vality.gambit.domain.Tables;
 import dev.vality.gambit.domain.tables.pojos.Data;
 import dev.vality.gambit.exception.NotFoundException;
-import dev.vality.gambit.util.JdbcUtil;
+import dev.vality.gambit.util.DslContextUtil;
 import dev.vality.gambit.util.TestObjectFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -29,11 +30,11 @@ class DataDaoImplTest {
     private DataDaoImpl dataDao;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private DSLContext dslContext;
 
     @BeforeEach
     void setUp() {
-        JdbcUtil.truncate(jdbcTemplate, "data");
+        DslContextUtil.truncate(dslContext, Tables.DATA);
     }
 
     @Test

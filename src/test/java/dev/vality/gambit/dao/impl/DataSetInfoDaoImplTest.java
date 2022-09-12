@@ -2,13 +2,14 @@ package dev.vality.gambit.dao.impl;
 
 import dev.vality.gambit.DataSetNotFound;
 import dev.vality.gambit.annotation.SpringBootPostgresqlTest;
+import dev.vality.gambit.domain.Tables;
 import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
-import dev.vality.gambit.util.JdbcUtil;
+import dev.vality.gambit.util.DslContextUtil;
 import dev.vality.gambit.util.TestObjectFactory;
+import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,11 +24,11 @@ class DataSetInfoDaoImplTest {
     private DataSetInfoDaoImpl dataSetInfoDao;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private DSLContext dslContext;
 
     @BeforeEach
     void setUp() {
-        JdbcUtil.truncate(jdbcTemplate, "data_set_info");
+        DslContextUtil.truncate(dslContext, Tables.DATA_SET_INFO);
     }
 
     @Test

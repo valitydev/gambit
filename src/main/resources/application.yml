@@ -50,7 +50,6 @@ management:
       exposure:
         include: health,info,prometheus
 
-
 info:
   version: '@project.version@'
   stage: dev

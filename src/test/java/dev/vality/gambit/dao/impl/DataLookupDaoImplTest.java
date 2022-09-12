@@ -1,14 +1,14 @@
 package dev.vality.gambit.dao.impl;
 
 import dev.vality.gambit.annotation.SpringBootPostgresqlTest;
+import dev.vality.gambit.domain.Tables;
 import dev.vality.gambit.domain.tables.pojos.DataLookup;
-import dev.vality.gambit.util.JdbcUtil;
+import dev.vality.gambit.util.DslContextUtil;
 import dev.vality.gambit.util.TestObjectFactory;
+import org.jooq.DSLContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.HashSet;
 import java.util.List;
@@ -23,21 +23,18 @@ class DataLookupDaoImplTest {
     private DataLookupDaoImpl dataLookupDao;
 
     @Autowired
-    private JdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private DSLContext dslContext;
 
     @BeforeEach
     void setUp() {
-        JdbcUtil.truncate(jdbcTemplate, "data_lookup");
+        DslContextUtil.truncate(dslContext, Tables.DATA_LOOKUP);
     }
 
     @Test
     void saveBatch() {
         List<DataLookup> dataLookupList = TestObjectFactory.createDataLookupList(2425243, 50);
         dataLookupDao.saveBatch(new HashSet<>(dataLookupList));
-        assertEquals(50, JdbcUtil.count(namedParameterJdbcTemplate, "data_lookup"));
+        assertEquals(50, DslContextUtil.count(dslContext, Tables.DATA_LOOKUP));
     }
 
     @Test

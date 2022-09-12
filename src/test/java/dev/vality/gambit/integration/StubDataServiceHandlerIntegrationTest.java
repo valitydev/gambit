@@ -3,11 +3,11 @@ package dev.vality.gambit.integration;
 import dev.vality.gambit.DataRequest;
 import dev.vality.gambit.DataResponse;
 import dev.vality.gambit.DataSetNotFound;
-import dev.vality.gambit.annotation.SpringBootPostgresqlTest;
 import dev.vality.gambit.domain.tables.pojos.Data;
 import dev.vality.gambit.domain.tables.pojos.DataLookup;
 import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
 import dev.vality.gambit.service.impl.StubDataServiceHandler;
+import dev.vality.gambit.util.TestObjectFactory;
 import org.apache.thrift.TException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import static dev.vality.gambit.util.TestObjectFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootPostgresqlTest
 class StubDataServiceHandlerIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
@@ -144,6 +143,43 @@ class StubDataServiceHandlerIntegrationTest extends AbstractIntegrationTest {
         );
         assertEquals(expected, actual.getData());
         assertNotNull(dataLookupDao.getDataLookups(Set.of(DATA_SET_INFO_ID), hash));
+    }
+
+    @Test
+    void createDataSetNoTextInName() {
+        assertThrows(IllegalStateException.class,
+                () -> handler.createDataSet(createDataSetRequest(" ", "create.csv")));
+    }
+
+    @Test
+    void createDataSetNoData() {
+        assertThrows(IllegalStateException.class,
+                () -> handler.createDataSet(createDataSetRequest(DATA_SET_INFO_NAME, new byte[]{})));
+    }
+
+    @Test
+    void createDataSet() {
+        handler.createDataSet(createDataSetRequest(DATA_SET_INFO_NAME, "create.csv"));
+        assertDataBaseCounts(1, 2);
+    }
+
+    @Test
+    void updateDataSetNoTextInName() {
+        assertThrows(IllegalStateException.class,
+                () -> handler.updateDataSet(createDataSetRequest(" ", "create.csv")));
+    }
+
+    @Test
+    void updateDataSetNoData() {
+        assertThrows(IllegalStateException.class,
+                () -> handler.updateDataSet(createDataSetRequest(DATA_SET_INFO_NAME, new byte[]{})));
+    }
+
+    @Test
+    void updateDataSet() throws TException {
+        dataSetInfoDao.save(TestObjectFactory.createDefaultDataSetInfo());
+        handler.updateDataSet(createDataSetRequest(DATA_SET_INFO_NAME, "update.csv"));
+        assertDataBaseCounts(1, 2);
     }
 
 }
