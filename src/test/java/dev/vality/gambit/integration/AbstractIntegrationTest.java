@@ -18,7 +18,6 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootPostgresqlTest
 public class AbstractIntegrationTest {
 
     @Autowired

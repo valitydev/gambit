@@ -3,6 +3,7 @@ package dev.vality.gambit.integration;
 import dev.vality.gambit.DataRequest;
 import dev.vality.gambit.DataResponse;
 import dev.vality.gambit.DataSetNotFound;
+import dev.vality.gambit.annotation.SpringBootPostgresqlTest;
 import dev.vality.gambit.domain.tables.pojos.Data;
 import dev.vality.gambit.domain.tables.pojos.DataLookup;
 import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
@@ -22,6 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static dev.vality.gambit.util.TestObjectFactory.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootPostgresqlTest
 class StubDataServiceHandlerIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired

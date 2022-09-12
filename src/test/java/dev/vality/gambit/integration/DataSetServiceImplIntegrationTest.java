@@ -1,6 +1,7 @@
 package dev.vality.gambit.integration;
 
 import dev.vality.gambit.DataSetNotFound;
+import dev.vality.gambit.annotation.SpringBootPostgresqlTest;
 import dev.vality.gambit.domain.Tables;
 import dev.vality.gambit.domain.tables.pojos.Data;
 import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
@@ -18,6 +19,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootPostgresqlTest
 public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
