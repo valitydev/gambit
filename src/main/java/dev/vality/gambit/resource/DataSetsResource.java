@@ -2,6 +2,7 @@ package dev.vality.gambit.resource;
 
 import dev.vality.gambit.DataSetNotFound;
 import dev.vality.gambit.exception.DataSetInfoAlreadyExistException;
+import dev.vality.gambit.exception.FileProcessingException;
 import dev.vality.gambit.service.DataSetService;
 import dev.vality.gambit.factory.BufferedReaderFactory;
 import dev.vality.openapi.gambit.api.DataSetsApi;
@@ -35,7 +36,7 @@ public class DataSetsResource implements DataSetsApi {
             return ResponseEntity.badRequest().build();
         } catch (IOException e) {
             log.error("Error during file processing, file: {}", file.getOriginalFilename());
-            throw new RuntimeException(e);
+            throw new FileProcessingException(e);
         }
         log.info("Created data set: {}", dataSetName);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -51,7 +52,7 @@ public class DataSetsResource implements DataSetsApi {
             return ResponseEntity.badRequest().build();
         } catch (IOException e) {
             log.error("Error during file processing, file: {}", file.getOriginalFilename());
-            throw new RuntimeException(e);
+            throw new FileProcessingException(e);
         }
         log.info("Updated data set: {}", dataSetName);
         return ResponseEntity.ok(null);

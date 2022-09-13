@@ -1,6 +1,7 @@
 package dev.vality.gambit.service.impl;
 
 import dev.vality.gambit.*;
+import dev.vality.gambit.exception.FileProcessingException;
 import dev.vality.gambit.factory.DataMapFactory;
 import dev.vality.gambit.domain.tables.pojos.DataLookup;
 import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
@@ -56,7 +57,7 @@ public class StubDataServiceHandler implements StubDataServiceSrv.Iface {
             dataSetService.createDataSet(dataSetRequest.getDataSetName(), bufferedReader);
         } catch (IOException e) {
             log.error("Error during createDataSet processing.");
-            throw new RuntimeException(e);
+            throw new FileProcessingException(e);
         }
         log.debug("created dataSet: {}", dataSetRequest.getDataSetName());
     }
@@ -70,7 +71,7 @@ public class StubDataServiceHandler implements StubDataServiceSrv.Iface {
             dataSetService.updateDataSet(dataSetRequest.getDataSetName(), bufferedReader);
         } catch (IOException e) {
             log.error("Error during updateDataSet processing.");
-            throw new RuntimeException(e);
+            throw new FileProcessingException(e);
         }
         log.debug("updated dataSetName: {}", dataSetRequest.getDataSetName());
     }
