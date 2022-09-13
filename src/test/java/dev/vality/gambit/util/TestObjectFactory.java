@@ -1,5 +1,7 @@
 package dev.vality.gambit.util;
 
+import dev.vality.gambit.DataSetRequest;
+import dev.vality.gambit.File;
 import dev.vality.gambit.domain.tables.pojos.Data;
 import dev.vality.gambit.domain.tables.pojos.DataLookup;
 import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
@@ -9,6 +11,8 @@ import lombok.SneakyThrows;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -59,6 +63,29 @@ public class TestObjectFactory {
         data.setDataSetInfoId(dataSetInfoId);
         data.setValues(values);
         return data;
+    }
+
+    public static DataSetRequest createDataSetRequest(String dataSetName, String fileName) {
+        return createDataSetRequest(dataSetName, getBytesFromFile(fileName));
+    }
+
+    public static DataSetRequest createDataSetRequest(String dataSetName, byte[] bytes) {
+        File file = new File();
+        file.setCsv(bytes);
+        return new DataSetRequest()
+                .setDataSetName(dataSetName)
+                .setFile(file);
+    }
+
+    @SneakyThrows
+    public static byte[] getBytesFromFile(String fileName) {
+        return Files.readAllBytes(Path.of("src/test/resources/data_sets/" + fileName));
+    }
+
+    @SneakyThrows
+    public static BufferedReader createBufferedReader(String fileName) {
+        return new BufferedReader(new InputStreamReader(
+                Files.newInputStream(Path.of("src/test/resources/data_sets/" + fileName))));
     }
 
     public static MultipartFile createMultipartFile(String name) {

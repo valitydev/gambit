@@ -1,12 +1,13 @@
 package dev.vality.gambit.service;
 
 import dev.vality.gambit.DataSetNotFound;
-import org.springframework.web.multipart.MultipartFile;
+
+import java.io.BufferedReader;
 
 public interface DataSetService {
 
-    void createDataSet(String dataSetName, MultipartFile file);
+    void createDataSet(String dataSetName, BufferedReader bufferedReader);
 
-    void updateDataSet(String dataSetName, MultipartFile file) throws DataSetNotFound;
+    void updateDataSet(String dataSetName, BufferedReader bufferedReader) throws DataSetNotFound;
 
 }

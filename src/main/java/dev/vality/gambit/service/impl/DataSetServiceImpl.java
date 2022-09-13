@@ -15,8 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -35,9 +35,9 @@ public class DataSetServiceImpl implements DataSetService {
 
     @Transactional
     @Override
-    public void createDataSet(String dataSetName, MultipartFile file) {
+    public void createDataSet(String dataSetName, BufferedReader bufferedReader) {
         validateDataSetNameRequest(dataSetName);
-        DataEntries dataEntries = fileService.process(file);
+        DataEntries dataEntries = fileService.process(bufferedReader);
         Integer dataSetInfoId = dataSetInfoService.createDataSetInfo(
                 new DataSetInfo(null, dataSetName, String.join(Constants.SEPARATOR, dataEntries.getHeaders())));
         dataService.saveDataBatch(dataEntries.getValues().stream()
@@ -47,11 +47,11 @@ public class DataSetServiceImpl implements DataSetService {
 
     @Transactional
     @Override
-    public void updateDataSet(String dataSetName, MultipartFile file) throws DataSetNotFound {
+    public void updateDataSet(String dataSetName, BufferedReader bufferedReader) throws DataSetNotFound {
         DataSetInfo dataSetInfo = dataSetInfoService.getDataSetInfoByName(dataSetName)
                 .orElseThrow(DataSetNotFound::new);
         List<String> existingHeaders = Arrays.asList(dataSetInfo.getHeaders().split(Constants.SEPARATOR));
-        DataEntries dataEntries = fileService.process(file, existingHeaders);
+        DataEntries dataEntries = fileService.process(bufferedReader, existingHeaders);
         dataService.saveDataBatch(dataEntries.getValues().stream()
                 .map(value -> DataFactory.create(dataSetInfo.getId(), value))
                 .collect(Collectors.toList()));

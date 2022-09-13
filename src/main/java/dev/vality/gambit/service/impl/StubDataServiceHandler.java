@@ -1,9 +1,7 @@
 package dev.vality.gambit.service.impl;
 
-import dev.vality.gambit.DataRequest;
-import dev.vality.gambit.DataResponse;
-import dev.vality.gambit.DataSetNotFound;
-import dev.vality.gambit.StubDataServiceSrv;
+import dev.vality.gambit.*;
+import dev.vality.gambit.exception.FileProcessingException;
 import dev.vality.gambit.factory.DataMapFactory;
 import dev.vality.gambit.domain.tables.pojos.DataLookup;
 import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
@@ -11,12 +9,17 @@ import dev.vality.gambit.factory.DataLookupFactory;
 import dev.vality.gambit.service.DataLookupService;
 import dev.vality.gambit.service.DataService;
 import dev.vality.gambit.service.DataSetInfoService;
+import dev.vality.gambit.service.DataSetService;
+import dev.vality.gambit.factory.BufferedReaderFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,19 +35,56 @@ public class StubDataServiceHandler implements StubDataServiceSrv.Iface {
 
     private final DataService dataService;
 
+    private final DataSetService dataSetService;
+
     @Override
     public DataResponse getData(DataRequest dataRequest) throws TException {
-        log.debug("Received request: {}", dataRequest);
-        validateRequest(dataRequest);
+        log.debug("Received getData request: {}", dataRequest);
+        validateDataRequest(dataRequest);
         Map<Integer, DataSetInfo> dataSetInfos = getDataSetInfos(dataRequest);
         Set<Long> dataIds = getDataIds(dataRequest, dataSetInfos);
         Map<String, String> mergedDataMap = getDataMapByDataIds(dataSetInfos, dataIds);
-        log.debug("Result map: {}", mergedDataMap);
+        log.debug("getData result map: {}", mergedDataMap);
         return new DataResponse(mergedDataMap);
     }
 
-    private void validateRequest(DataRequest dataRequest) {
+    @Override
+    public void createDataSet(DataSetRequest dataSetRequest) {
+        log.debug("received createDataSet request. dataSetName: {}, file type: {}",
+                dataSetRequest.getDataSetName(), dataSetRequest.getFile().getSetField().getFieldName());
+        validateDataSetRequest(dataSetRequest);
+        try (BufferedReader bufferedReader = BufferedReaderFactory.create(dataSetRequest)) {
+            dataSetService.createDataSet(dataSetRequest.getDataSetName(), bufferedReader);
+        } catch (IOException e) {
+            log.error("Error during createDataSet processing.");
+            throw new FileProcessingException(e);
+        }
+        log.debug("created dataSet: {}", dataSetRequest.getDataSetName());
+    }
+
+    @Override
+    public void updateDataSet(DataSetRequest dataSetRequest) throws TException {
+        log.debug("received updateDataSet request. dataSetName: {}, file type: {}",
+                dataSetRequest.getDataSetName(), dataSetRequest.getFile().getSetField().getFieldName());
+        validateDataSetRequest(dataSetRequest);
+        try (BufferedReader bufferedReader = BufferedReaderFactory.create(dataSetRequest)) {
+            dataSetService.updateDataSet(dataSetRequest.getDataSetName(), bufferedReader);
+        } catch (IOException e) {
+            log.error("Error during updateDataSet processing.");
+            throw new FileProcessingException(e);
+        }
+        log.debug("updated dataSetName: {}", dataSetRequest.getDataSetName());
+    }
+
+    private void validateDataRequest(DataRequest dataRequest) {
         if (CollectionUtils.isEmpty(dataRequest.getDataSetsNames())) {
+            throw new IllegalStateException("Empty data set names list");
+        }
+    }
+
+    private void validateDataSetRequest(DataSetRequest dataSetRequest) {
+        if (!StringUtils.hasText(dataSetRequest.getDataSetName())
+                || !dataSetRequest.getFile().isSetCsv() || dataSetRequest.getFile().getCsv().length == 0) {
             throw new IllegalStateException("Empty data set names list");
         }
     }

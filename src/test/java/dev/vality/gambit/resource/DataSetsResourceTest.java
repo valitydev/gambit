@@ -14,7 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 
 @ExtendWith({SpringExtension.class, MockitoExtension.class})
@@ -37,7 +41,14 @@ class DataSetsResourceTest {
     void createDataSetIllegalArgumentException() {
         doThrow(new IllegalArgumentException())
                 .when(dataSetService)
-                .createDataSet(TestObjectFactory.DATA_SET_INFO_NAME, file);
+                .createDataSet(anyString(), any(BufferedReader.class));
+        ResponseEntity<Void> response = resource.createDataSet(TestObjectFactory.DATA_SET_INFO_NAME, file);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void createDataSetWrongContentType() {
+        MultipartFile file = TestObjectFactory.createMultipartFile("create.csv", "application/json");
         ResponseEntity<Void> response = resource.createDataSet(TestObjectFactory.DATA_SET_INFO_NAME, file);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -46,7 +57,7 @@ class DataSetsResourceTest {
     void createDataSetDataSetInfoAlreadyExistException() {
         doThrow(new DataSetInfoAlreadyExistException(TestObjectFactory.DATA_SET_INFO_NAME))
                 .when(dataSetService)
-                .createDataSet(TestObjectFactory.DATA_SET_INFO_NAME, file);
+                .createDataSet(anyString(), any(BufferedReader.class));
         ResponseEntity<Void> response = resource.createDataSet(TestObjectFactory.DATA_SET_INFO_NAME, file);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -61,7 +72,7 @@ class DataSetsResourceTest {
     void updateDataSetIllegalArgumentException() throws DataSetNotFound {
         doThrow(new IllegalArgumentException())
                 .when(dataSetService)
-                .updateDataSet(TestObjectFactory.DATA_SET_INFO_NAME, file);
+                .updateDataSet(anyString(), any(BufferedReader.class));
         ResponseEntity<Void> response = resource.updateDataSet(TestObjectFactory.DATA_SET_INFO_NAME, file);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
@@ -70,8 +81,15 @@ class DataSetsResourceTest {
     void updateDataSetDataSetInfoAlreadyExistException() throws DataSetNotFound {
         doThrow(new DataSetNotFound())
                 .when(dataSetService)
-                .updateDataSet(TestObjectFactory.DATA_SET_INFO_NAME, file);
+                .updateDataSet(anyString(), any(BufferedReader.class));
         ResponseEntity<Void> response = resource.updateDataSet(TestObjectFactory.DATA_SET_INFO_NAME, file);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void updateDataSetWrongContentType() {
+        MultipartFile file = TestObjectFactory.createMultipartFile("update.csv", "application/json");
+        ResponseEntity<Void> response = resource.createDataSet(TestObjectFactory.DATA_SET_INFO_NAME, file);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 

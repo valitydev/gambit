@@ -1,28 +1,30 @@
 package dev.vality.gambit.integration;
 
 import dev.vality.gambit.annotation.SpringBootPostgresqlTest;
-import dev.vality.gambit.dao.DataDao;
 import dev.vality.gambit.dao.DataLookupDao;
 import dev.vality.gambit.dao.DataSetInfoDao;
+import dev.vality.gambit.dao.impl.DataDaoImpl;
+import dev.vality.gambit.domain.Tables;
 import dev.vality.gambit.domain.tables.pojos.Data;
 import dev.vality.gambit.domain.tables.pojos.DataLookup;
 import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
-import dev.vality.gambit.util.JdbcUtil;
+import dev.vality.gambit.util.DslContextUtil;
+import org.jooq.DSLContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Set;
 
-@SpringBootPostgresqlTest
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 public class AbstractIntegrationTest {
 
     @Autowired
-    protected JdbcTemplate jdbcTemplate;
+    protected DSLContext dslContext;
 
     @Autowired
-    protected DataDao dataDao;
+    protected DataDaoImpl dataDao;
 
     @Autowired
     protected DataSetInfoDao dataSetInfoDao;
@@ -31,9 +33,9 @@ public class AbstractIntegrationTest {
     protected DataLookupDao dataLookupDao;
 
     void cleanUpDb() {
-        JdbcUtil.truncate(jdbcTemplate, "data");
-        JdbcUtil.truncate(jdbcTemplate, "data_lookup");
-        JdbcUtil.truncate(jdbcTemplate, "data_set_info");
+        DslContextUtil.truncate(dslContext, Tables.DATA);
+        DslContextUtil.truncate(dslContext, Tables.DATA_LOOKUP);
+        DslContextUtil.truncate(dslContext, Tables.DATA_SET_INFO);
     }
 
     protected void fillDb(List<DataSetInfo> dataSetInfos, List<Data> dataList, Set<DataLookup> dataLookups) {
@@ -46,6 +48,12 @@ public class AbstractIntegrationTest {
         if (!CollectionUtils.isEmpty(dataLookups)) {
             dataLookupDao.saveBatch(dataLookups);
         }
+    }
+
+    protected void assertDataBaseCounts(int dataSetInfoCount, int dataCount) {
+        assertEquals(0, DslContextUtil.count(dslContext, Tables.DATA_LOOKUP));
+        assertEquals(dataSetInfoCount, DslContextUtil.count(dslContext, Tables.DATA_SET_INFO));
+        assertEquals(dataCount, DslContextUtil.count(dslContext, Tables.DATA));
     }
 
 }

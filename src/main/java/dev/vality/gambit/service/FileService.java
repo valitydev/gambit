@@ -1,14 +1,14 @@
 package dev.vality.gambit.service;
 
 import dev.vality.gambit.model.DataEntries;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedReader;
 import java.util.List;
 
 public interface FileService {
 
-    DataEntries process(MultipartFile file);
+    DataEntries process(BufferedReader bufferedReader);
 
-    DataEntries process(MultipartFile file, List<String> existingHeaders);
+    DataEntries process(BufferedReader bufferedReader, List<String> existingHeaders);
 
 }
