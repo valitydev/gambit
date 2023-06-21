@@ -38,7 +38,7 @@ class StubDataServiceHandlerIntegrationTest extends AbstractIntegrationTest {
     void getDataOneDataSetInfoNotExisting() {
         fillDb(
                 List.of(createDefaultDataSetInfo()),
-                List.of(createData(DATA_SET_INFO_ID, "uno,dos,tres", "hash!")),
+                List.of(createData(DATA_SET_INFO_ID, "uno,dos,tres")),
                 null
         );
         int hash = ThreadLocalRandom.current().nextInt(0, Integer.MAX_VALUE);
@@ -129,7 +129,7 @@ class StubDataServiceHandlerIntegrationTest extends AbstractIntegrationTest {
     void getDataOneDataSetOneDataEntryNoLookup() throws TException {
         fillDb(
                 List.of(createDefaultDataSetInfo()),
-                List.of(createData(DATA_SET_INFO_ID, "uno,dos,tres", "hash!")),
+                List.of(createData(DATA_SET_INFO_ID, "uno,dos,tres")),
                 null
         );
         int hash = ThreadLocalRandom.current().nextInt(0, Integer.MAX_VALUE);

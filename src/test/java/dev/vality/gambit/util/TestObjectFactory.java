@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestObjectFactory {
@@ -58,7 +59,7 @@ public class TestObjectFactory {
         return dataList;
     }
 
-    public static Data createData(Integer dataSetInfoId, String values, String valuesHash) {
+    public static Data createData(Integer dataSetInfoId, String values) {
         var data = new Data();
         data.setDataSetInfoId(dataSetInfoId);
         data.setValues(values);
@@ -100,5 +101,10 @@ public class TestObjectFactory {
                 contentType,
                 Files.newInputStream(Path.of("src/test/resources/data_sets/" + name))
         );
+    }
+
+
+    public static String randomString() {
+        return UUID.randomUUID().toString();
     }
 }

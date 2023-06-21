@@ -3,7 +3,6 @@ package dev.vality.gambit.service;
 import dev.vality.gambit.domain.tables.pojos.Data;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public interface DataService {
@@ -13,5 +12,7 @@ public interface DataService {
     Set<Data> getDataByIds(Set<Long> ids);
 
     Long getRandomDataId(Integer dataSetInfoId);
+
+    Data getRandomDataRow(Integer dataSetInfoId);
 
 }

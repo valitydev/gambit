@@ -1,16 +1,17 @@
 package dev.vality.gambit.service.impl;
 
 import dev.vality.gambit.*;
-import dev.vality.gambit.exception.FileProcessingException;
-import dev.vality.gambit.factory.DataMapFactory;
+import dev.vality.gambit.domain.tables.pojos.Data;
 import dev.vality.gambit.domain.tables.pojos.DataLookup;
 import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
+import dev.vality.gambit.exception.FileProcessingException;
+import dev.vality.gambit.factory.BufferedReaderFactory;
 import dev.vality.gambit.factory.DataLookupFactory;
+import dev.vality.gambit.factory.DataMapFactory;
 import dev.vality.gambit.service.DataLookupService;
 import dev.vality.gambit.service.DataService;
 import dev.vality.gambit.service.DataSetInfoService;
 import dev.vality.gambit.service.DataSetService;
-import dev.vality.gambit.factory.BufferedReaderFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TException;
@@ -20,7 +21,10 @@ import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,6 +49,18 @@ public class StubDataServiceHandler implements StubDataServiceSrv.Iface {
         Set<Long> dataIds = getDataIds(dataRequest, dataSetInfos);
         Map<String, String> mergedDataMap = getDataMapByDataIds(dataSetInfos, dataIds);
         log.debug("getData result map: {}", mergedDataMap);
+        return new DataResponse(mergedDataMap);
+    }
+
+    @Override
+    public DataResponse getRandomDataRow(DataRowRequest dataRowRequest) throws TException {
+        log.debug("Received getRandomDataRow request: {}", dataRowRequest);
+        DataSetInfo dataSetInfo = dataSetInfoService.getDataSetInfoByName(dataRowRequest.getDataSetName())
+                .orElseThrow(DataSetNotFound::new);
+        Data randomDataRow = dataService.getRandomDataRow(dataSetInfo.getId());
+        Map<String, String> mergedDataMap =
+                DataMapFactory.createDataMap(dataSetInfo.getHeaders(), randomDataRow.getValues());
+        log.debug("getRandomDataRow result map: {}", mergedDataMap);
         return new DataResponse(mergedDataMap);
     }
 

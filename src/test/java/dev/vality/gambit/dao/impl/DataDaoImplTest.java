@@ -95,7 +95,7 @@ class DataDaoImplTest {
             log.info("Preparing data set #{}", i);
             List<Data> data = new ArrayList<>();
             for (int j = 0; j < entriesPerDataSet; j++) {
-                data.add(TestObjectFactory.createData(i, String.valueOf(i), String.valueOf(i)));
+                data.add(TestObjectFactory.createData(i, String.valueOf(i)));
             }
             log.info("Inserting data set #{}", i);
             dataDao.saveBatch(data);
@@ -115,4 +115,44 @@ class DataDaoImplTest {
         randomIds.forEach(randomId -> assertTrue(0 <= randomId && randomId <= dataSetsCount * entriesPerDataSet));
     }
 
+    @Test
+    void getRandomDataRow() {
+        dataDao.saveBatch(TestObjectFactory.createDataList(TestObjectFactory.DATA_SET_INFO_ID, 50));
+        Data firstRandomData = dataDao.getRandomDataRow(TestObjectFactory.DATA_SET_INFO_ID);
+        Data secondRandomData = dataDao.getRandomDataRow(TestObjectFactory.DATA_SET_INFO_ID);
+        assertNotEquals(firstRandomData, secondRandomData);
+        assertTrue(0 < firstRandomData.getId() && firstRandomData.getId() < 51);
+        assertTrue(0 < secondRandomData.getId() && secondRandomData.getId() < 51);
+    }
+
+    @Disabled
+    @Test
+    void getRandomDataRowPerformanceTest() {
+        log.info("Preparing DB");
+        int entriesPerDataSet = 1_000_000;
+        int dataSetsCount = 3;
+        for (int i = 1; i <= dataSetsCount; i++) {
+            log.info("Preparing data set #{}", i);
+            List<Data> data = new ArrayList<>();
+            for (int j = 0; j < entriesPerDataSet; j++) {
+                data.add(TestObjectFactory.createData(i, TestObjectFactory.randomString()));
+            }
+            log.info("Inserting data set #{}", i);
+            dataDao.saveBatch(data);
+            log.info("Data set #{} inserted", i);
+        }
+
+        log.info("Start querying DB for random ID");
+        List<Long> randomIds = new ArrayList<>();
+        for (int i = 0; i < 500; i++) {
+            long start = System.currentTimeMillis();
+            int dataSetInfoId = ThreadLocalRandom.current().nextInt(1, dataSetsCount + 1);
+            var randomDataRow = dataDao.getRandomDataRow(dataSetInfoId);
+            long end = System.currentTimeMillis();
+            randomIds.add(randomDataRow.getId());
+            log.info("{}th query randomDataRow: {}, execution time: {}ms", i, randomDataRow, end - start);
+        }
+        assertEquals(500, randomIds.size());
+        randomIds.forEach(randomId -> assertTrue(0 <= randomId && randomId <= dataSetsCount * entriesPerDataSet));
+    }
 }

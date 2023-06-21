@@ -32,7 +32,7 @@
         <local.pg.url>jdbc:postgresql://localhost:5432/gambit</local.pg.url>
         <local.pg.port>5432</local.pg.port>
         <swag-gambit.version>1.4-cb39563-server</swag-gambit.version>
-        <gambit-proto.version>1.6-931f2b8</gambit-proto.version>
+        <gambit-proto.version>1.7-b10bf69</gambit-proto.version>
     </properties>
 
     <dependencies>
