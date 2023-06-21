@@ -13,4 +13,6 @@ public interface DataDao {
 
     Long getRandomDataId(Integer dataSetInfoId);
 
+    Data getRandomDataRow(Integer dataSetInfoId);
+
 }

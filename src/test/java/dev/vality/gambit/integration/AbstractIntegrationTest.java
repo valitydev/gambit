@@ -1,6 +1,5 @@
 package dev.vality.gambit.integration;
 
-import dev.vality.gambit.annotation.SpringBootPostgresqlTest;
 import dev.vality.gambit.dao.DataLookupDao;
 import dev.vality.gambit.dao.DataSetInfoDao;
 import dev.vality.gambit.dao.impl.DataDaoImpl;

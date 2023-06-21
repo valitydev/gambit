@@ -17,6 +17,7 @@ import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 import static dev.vality.gambit.domain.tables.Data.DATA;
@@ -64,6 +65,25 @@ public class DataDaoImpl extends AbstractGenericDao implements DataDao {
                 .limit(1);
         return Optional.ofNullable(fetchOne(query, idRowMapper))
                 .orElseThrow(() -> new NotFoundException("Data entity not found, dataSetInfoId: " + dataSetInfoId));
+    }
+
+    @Override
+    public Data getRandomDataRow(Integer dataSetInfoId) {
+        Query query = getDslContext().selectFrom(DATA)
+                .where(DATA.DATA_SET_INFO_ID.eq(dataSetInfoId))
+                .offset(generateRandomOffset(dataSetInfoId))
+                .limit(1);
+        return Optional.ofNullable(fetchOne(query, rowMapper))
+                .orElseThrow(() -> new NotFoundException("Data entity not found, dataSetInfoId: " + dataSetInfoId));
+    }
+
+    private int generateRandomOffset(Integer dataSetInfoId) {
+        var countQuery = getDslContext()
+                .selectCount()
+                .from(DATA)
+                .where(DATA.DATA_SET_INFO_ID.eq(dataSetInfoId));
+        Integer count = fetchOne(countQuery, Integer.class);
+        return ThreadLocalRandom.current().nextInt(1, count);
     }
 
 }
