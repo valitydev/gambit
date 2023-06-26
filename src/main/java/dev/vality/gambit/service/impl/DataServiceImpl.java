@@ -42,4 +42,10 @@ public class DataServiceImpl implements DataService {
         return dataDao.getRandomDataRow(dataSetInfoId);
     }
 
+    @Override
+    public Data getBindingDataRow(Integer dataSetInfoId, String bindId) {
+        log.debug("Querying binding data row for dataSetInfoId: {}, bindId: {}", dataSetInfoId, bindId);
+        return dataDao.getBindingDataRow(dataSetInfoId, bindId);
+    }
+
 }

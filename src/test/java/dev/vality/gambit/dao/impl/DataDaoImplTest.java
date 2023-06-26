@@ -85,7 +85,7 @@ class DataDaoImplTest {
         assertTrue(0 < secondRandomDataId && secondRandomDataId < 51);
     }
 
-    @Disabled
+    @Disabled("performance test")
     @Test
     void getRandomDataIdPerformanceTest() {
         log.info("Preparing DB");
@@ -125,7 +125,7 @@ class DataDaoImplTest {
         assertTrue(0 < secondRandomData.getId() && secondRandomData.getId() < 51);
     }
 
-    @Disabled
+    @Disabled("performance test")
     @Test
     void getRandomDataRowPerformanceTest() {
         log.info("Preparing DB");
@@ -154,5 +154,15 @@ class DataDaoImplTest {
         }
         assertEquals(500, randomIds.size());
         randomIds.forEach(randomId -> assertTrue(0 <= randomId && randomId <= dataSetsCount * entriesPerDataSet));
+    }
+
+    @Test
+    void getBindingDataRow() {
+        dataDao.saveBatch(TestObjectFactory.createDataList(TestObjectFactory.DATA_SET_INFO_ID, 50));
+        Data firstRandomData = dataDao.getBindingDataRow(TestObjectFactory.DATA_SET_INFO_ID, "test");
+        Data secondRandomData = dataDao.getBindingDataRow(TestObjectFactory.DATA_SET_INFO_ID, "test");
+        assertEquals(firstRandomData, secondRandomData);
+        assertTrue(0 < firstRandomData.getId() && firstRandomData.getId() < 51);
+        assertTrue(0 < secondRandomData.getId() && secondRandomData.getId() < 51);
     }
 }
