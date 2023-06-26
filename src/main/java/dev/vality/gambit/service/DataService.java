@@ -15,4 +15,6 @@ public interface DataService {
 
     Data getRandomDataRow(Integer dataSetInfoId);
 
+    Data getBindingDataRow(Integer dataSetInfoId, String bindId);
+
 }

@@ -55,12 +55,26 @@ public class StubDataServiceHandler implements StubDataServiceSrv.Iface {
     @Override
     public DataResponse getRandomDataRow(DataRowRequest dataRowRequest) throws TException {
         log.debug("Received getRandomDataRow request: {}", dataRowRequest);
-        DataSetInfo dataSetInfo = dataSetInfoService.getDataSetInfoByName(dataRowRequest.getDataSetName())
+        String dataSetInfoName = dataRowRequest.getDataSetName().toLowerCase();
+        DataSetInfo dataSetInfo = dataSetInfoService.getDataSetInfoByName(dataSetInfoName)
                 .orElseThrow(DataSetNotFound::new);
         Data randomDataRow = dataService.getRandomDataRow(dataSetInfo.getId());
         Map<String, String> mergedDataMap =
                 DataMapFactory.createDataMap(dataSetInfo.getHeaders(), randomDataRow.getValues());
         log.debug("getRandomDataRow result map: {}", mergedDataMap);
+        return new DataResponse(mergedDataMap);
+    }
+
+    @Override
+    public DataResponse getBindingDataRow(BindingDataRowRequest bindingDataRowRequest) throws TException {
+        log.debug("Received getBindingDataRow request: {}", bindingDataRowRequest);
+        String dataSetInfoName = bindingDataRowRequest.getDataSetName().toLowerCase();
+        DataSetInfo dataSetInfo = dataSetInfoService.getDataSetInfoByName(dataSetInfoName)
+                .orElseThrow(DataSetNotFound::new);
+        Data randomDataRow = dataService.getBindingDataRow(dataSetInfo.getId(), bindingDataRowRequest.getBindId());
+        Map<String, String> mergedDataMap =
+                DataMapFactory.createDataMap(dataSetInfo.getHeaders(), randomDataRow.getValues());
+        log.debug("getBindingDataRow result map: {}", mergedDataMap);
         return new DataResponse(mergedDataMap);
     }
 
