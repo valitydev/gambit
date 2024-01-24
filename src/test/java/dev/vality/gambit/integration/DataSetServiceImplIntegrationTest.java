@@ -20,7 +20,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootPostgresqlTest
-public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
+class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private DataSetServiceImpl service;
@@ -72,6 +72,16 @@ public class DataSetServiceImplIntegrationTest extends AbstractIntegrationTest {
                         TestObjectFactory.DATA_SET_INFO_NAME,
                         TestObjectFactory.createBufferedReader("create_invalid_value.csv"))
         );
+    }
+
+    @Test
+    void createDataSetWithDoubleQuotesAndCommaInside() {
+        service.createDataSet(
+                TestObjectFactory.DATA_SET_INFO_NAME,
+                TestObjectFactory.createBufferedReader("fingerprint.csv")
+        );
+
+        assertDataBaseCounts(1, 2);
     }
 
     @Test

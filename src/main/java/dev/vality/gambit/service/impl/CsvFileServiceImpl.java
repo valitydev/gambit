@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -64,7 +65,7 @@ public class CsvFileServiceImpl implements FileService {
     }
 
     private String validateAndTrimValues(String line, int headersCount) {
-        List<String> trimmedValues = trimAndSplitLine(line);
+        List<String> trimmedValues = trimAndSplitValueLine(line);
         if (headersCount != trimmedValues.size()) {
             log.error("Line '{}' doesn't match headers count {}", line, headersCount);
             throw new IllegalArgumentException();
@@ -89,6 +90,27 @@ public class CsvFileServiceImpl implements FileService {
         return Arrays.stream(line.split(Constants.SEPARATOR))
                 .map(String::trim)
                 .collect(Collectors.toList());
+    }
+
+    private List<String> trimAndSplitValueLine(String line) {
+        List<String> values = new ArrayList<>();
+        int startPosition = 0;
+        boolean isInsideQuotes = false;
+        for (int currentPosition = 0; currentPosition < line.length(); currentPosition++) {
+            if (line.charAt(currentPosition) == Constants.DOUBLE_QUOTES) {
+                isInsideQuotes = !isInsideQuotes;
+            } else if (line.charAt(currentPosition) == Constants.SEPARATOR.charAt(0) && !isInsideQuotes) {
+                values.add(line.substring(startPosition, currentPosition).trim());
+                startPosition = currentPosition + 1;
+            }
+        }
+        String lastValue = line.substring(startPosition).trim();
+        if (lastValue.equals(Constants.SEPARATOR)) {
+            values.add("");
+        } else {
+            values.add(lastValue);
+        }
+        return values;
     }
 
 }
