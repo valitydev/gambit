@@ -5,11 +5,11 @@ import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
 import dev.vality.gambit.exception.DataSetInfoAlreadyExistException;
 import dev.vality.gambit.factory.DataFactory;
 import dev.vality.gambit.model.DataEntries;
-import dev.vality.gambit.service.FileService;
 import dev.vality.gambit.service.DataService;
 import dev.vality.gambit.service.DataSetInfoService;
 import dev.vality.gambit.service.DataSetService;
-import dev.vality.gambit.util.Constants;
+import dev.vality.gambit.service.FileService;
+import dev.vality.gambit.util.CsvUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,7 +39,7 @@ public class DataSetServiceImpl implements DataSetService {
         validateDataSetNameRequest(dataSetName);
         DataEntries dataEntries = fileService.process(bufferedReader);
         Integer dataSetInfoId = dataSetInfoService.createDataSetInfo(
-                new DataSetInfo(null, dataSetName, String.join(Constants.SEPARATOR, dataEntries.getHeaders())));
+                new DataSetInfo(null, dataSetName, String.join(CsvUtils.SEPARATOR, dataEntries.getHeaders())));
         dataService.saveDataBatch(dataEntries.getValues().stream()
                 .map(value -> DataFactory.create(dataSetInfoId, value))
                 .collect(Collectors.toList()));
@@ -50,7 +50,7 @@ public class DataSetServiceImpl implements DataSetService {
     public void updateDataSet(String dataSetName, BufferedReader bufferedReader) throws DataSetNotFound {
         DataSetInfo dataSetInfo = dataSetInfoService.getDataSetInfoByName(dataSetName)
                 .orElseThrow(DataSetNotFound::new);
-        List<String> existingHeaders = Arrays.asList(dataSetInfo.getHeaders().split(Constants.SEPARATOR));
+        List<String> existingHeaders = Arrays.asList(dataSetInfo.getHeaders().split(CsvUtils.SEPARATOR));
         DataEntries dataEntries = fileService.process(bufferedReader, existingHeaders);
         dataService.saveDataBatch(dataEntries.getValues().stream()
                 .map(value -> DataFactory.create(dataSetInfo.getId(), value))

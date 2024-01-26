@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DataMapFactoryTest {
 
@@ -22,6 +23,18 @@ class DataMapFactoryTest {
     void createDataMapSplitError() {
         assertThrows(IllegalArgumentException.class, () -> DataMapFactory.createDataMap("1", "1,2"));
         assertThrows(IllegalArgumentException.class, () -> DataMapFactory.createDataMap("one,two", "tres"));
+    }
+
+    @Test
+    void createDataMapWithDoubleQuotes() {
+        String headers = "one,two";
+        String values = "uno,\"dos,tres\"";
+        Map<String, String> expected = Map.of(
+                "one", "uno",
+                "two", "\"dos,tres\""
+        );
+        Map<String, String> actual = DataMapFactory.createDataMap(headers, values);
+        assertEquals(expected, actual);
     }
 
     @Test
