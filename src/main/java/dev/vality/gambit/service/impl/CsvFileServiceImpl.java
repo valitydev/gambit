@@ -3,7 +3,7 @@ package dev.vality.gambit.service.impl;
 import dev.vality.gambit.exception.FileProcessingException;
 import dev.vality.gambit.model.DataEntries;
 import dev.vality.gambit.service.FileService;
-import dev.vality.gambit.util.Constants;
+import dev.vality.gambit.util.CsvUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,8 +12,6 @@ import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,7 +44,7 @@ public class CsvFileServiceImpl implements FileService {
             log.error("Empty file");
             throw new IllegalArgumentException();
         }
-        List<String> inputHeaders = trimAndSplitLine(headerLine);
+        List<String> inputHeaders = CsvUtils.trimAndSplitLine(headerLine);
         if (!CollectionUtils.isEmpty(existingHeaders)) {
             validateByExistingHeaders(inputHeaders, existingHeaders);
         }
@@ -65,12 +63,12 @@ public class CsvFileServiceImpl implements FileService {
     }
 
     private String validateAndTrimValues(String line, int headersCount) {
-        List<String> trimmedValues = trimAndSplitValueLine(line);
+        List<String> trimmedValues = CsvUtils.trimAndSplitValueLine(line);
         if (headersCount != trimmedValues.size()) {
             log.error("Line '{}' doesn't match headers count {}", line, headersCount);
             throw new IllegalArgumentException();
         }
-        return String.join(Constants.SEPARATOR, trimmedValues);
+        return String.join(CsvUtils.SEPARATOR, trimmedValues);
     }
 
     private void validateByExistingHeaders(List<String> inputHeaders, List<String> existingHeaders) {
@@ -84,33 +82,6 @@ public class CsvFileServiceImpl implements FileService {
                 throw new IllegalArgumentException();
             }
         }
-    }
-
-    private List<String> trimAndSplitLine(String line) {
-        return Arrays.stream(line.split(Constants.SEPARATOR))
-                .map(String::trim)
-                .collect(Collectors.toList());
-    }
-
-    private List<String> trimAndSplitValueLine(String line) {
-        List<String> values = new ArrayList<>();
-        int startPosition = 0;
-        boolean isInsideQuotes = false;
-        for (int currentPosition = 0; currentPosition < line.length(); currentPosition++) {
-            if (line.charAt(currentPosition) == Constants.DOUBLE_QUOTES) {
-                isInsideQuotes = !isInsideQuotes;
-            } else if (line.charAt(currentPosition) == Constants.SEPARATOR.charAt(0) && !isInsideQuotes) {
-                values.add(line.substring(startPosition, currentPosition).trim());
-                startPosition = currentPosition + 1;
-            }
-        }
-        String lastValue = line.substring(startPosition).trim();
-        if (lastValue.equals(Constants.SEPARATOR)) {
-            values.add("");
-        } else {
-            values.add(lastValue);
-        }
-        return values;
     }
 
 }

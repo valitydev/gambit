@@ -1,6 +1,6 @@
 package dev.vality.gambit.factory;
 
-import dev.vality.gambit.util.Constants;
+import dev.vality.gambit.util.CsvUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +18,8 @@ public class DataMapFactory {
             log.error("Headers or values cannot be empty. headers: {}, values {}", headers, values);
             throw new IllegalArgumentException();
         }
-        String[] splitHeaders = headers.split(Constants.SEPARATOR);
-        String[] splitValues = values.split(Constants.SEPARATOR);
+        String[] splitHeaders = headers.split(CsvUtils.SEPARATOR);
+        String[] splitValues = CsvUtils.trimAndSplitValueLine(values).toArray(new String[0]);
         if (splitValues.length != splitHeaders.length) {
             log.error("Error during split. headers: {}, values {}", splitHeaders, splitValues);
             throw new IllegalArgumentException();
