@@ -129,7 +129,7 @@ public class StubDataServiceHandler implements StubDataServiceSrv.Iface {
 
     private void validateDataSetRequest(DataSetRequest dataSetRequest) {
         if (!StringUtils.hasText(dataSetRequest.getDataSetName())
-            || !dataSetRequest.getFile().isSetCsv() || dataSetRequest.getFile().getCsv().length == 0) {
+                || !dataSetRequest.getFile().isSetCsv() || dataSetRequest.getFile().getCsv().length == 0) {
             throw new IllegalStateException("Empty data set names list");
         }
     }
