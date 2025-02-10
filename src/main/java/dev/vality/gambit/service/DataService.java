@@ -11,6 +11,8 @@ public interface DataService {
 
     Set<Data> getDataByIds(Set<Long> ids);
 
+    Set<Data> getDataByDataSetInfoId(Integer id);
+
     Long getRandomDataId(Integer dataSetInfoId);
 
     Data getRandomDataRow(Integer dataSetInfoId);

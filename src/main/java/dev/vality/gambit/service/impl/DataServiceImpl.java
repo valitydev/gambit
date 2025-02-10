@@ -31,6 +31,12 @@ public class DataServiceImpl implements DataService {
     }
 
     @Override
+    public Set<Data> getDataByDataSetInfoId(Integer id) {
+        log.debug("Querying data by data set info id: {}", id);
+        return new HashSet<>(dataDao.getDataByDataSetInfoId(id));
+    }
+
+    @Override
     public Long getRandomDataId(Integer dataSetInfoId) {
         log.debug("Querying random data id for dataSetInfoId: {}", dataSetInfoId);
         return dataDao.getRandomDataId(dataSetInfoId);

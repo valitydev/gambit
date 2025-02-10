@@ -13,6 +13,8 @@ public interface DataDao {
 
     Long getRandomDataId(Integer dataSetInfoId);
 
+    List<Data> getDataByDataSetInfoId(Integer id);
+
     Data getRandomDataRow(Integer dataSetInfoId);
 
     Data getBindingDataRow(Integer dataSetInfoId, String bindId);

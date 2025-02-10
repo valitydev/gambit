@@ -2,6 +2,7 @@ package dev.vality.gambit.integration;
 
 import dev.vality.gambit.DataRequest;
 import dev.vality.gambit.DataResponse;
+import dev.vality.gambit.DataRowRequest;
 import dev.vality.gambit.DataSetNotFound;
 import dev.vality.gambit.annotation.SpringBootPostgresqlTest;
 import dev.vality.gambit.domain.tables.pojos.Data;
@@ -9,6 +10,7 @@ import dev.vality.gambit.domain.tables.pojos.DataLookup;
 import dev.vality.gambit.domain.tables.pojos.DataSetInfo;
 import dev.vality.gambit.service.impl.StubDataServiceHandler;
 import dev.vality.gambit.util.TestObjectFactory;
+import lombok.val;
 import org.apache.thrift.TException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,6 +51,20 @@ class StubDataServiceHandlerIntegrationTest extends AbstractIntegrationTest {
                         .setDataSetsNames(Set.of(DATA_SET_INFO_NAME, "non_existing"))
                         .setLookupKey(hash))
         );
+    }
+
+    @Test
+    void getFullDateDataSetInfoNotExisting() throws TException {
+        fillDb(
+                List.of(createDefaultDataSetInfo()),
+                List.of(createData(DATA_SET_INFO_ID, "uno,dos,tres"),
+                        createData(DATA_SET_INFO_ID, "uno_1,dos_1,tres_1")),
+                null
+        );
+
+        var fullDataSet = handler.getFullDataSet(new DataRowRequest()
+                .setDataSetName(DATA_SET_INFO_NAME));
+        assertEquals(2, fullDataSet.rows.size());
     }
 
     @Test
