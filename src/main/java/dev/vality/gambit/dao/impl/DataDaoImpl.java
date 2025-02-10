@@ -60,6 +60,15 @@ public class DataDaoImpl extends AbstractGenericDao implements DataDao {
     }
 
     @Override
+    public List<Data> getDataByDataSetInfoId(Integer id) {
+        Query query = getDslContext().selectFrom(DATA)
+                .where(DATA.DATA_SET_INFO_ID.eq(id));
+        return Optional.ofNullable(fetch(query, rowMapper))
+                .filter(dataList -> !CollectionUtils.isEmpty(dataList))
+                .orElseThrow(() -> new NotFoundException("Data entity not found, data_set_info_id: " + id));
+    }
+
+    @Override
     public Long getRandomDataId(Integer dataSetInfoId) {
         Query query = getDslContext().select(DATA.ID)
                 .from(DATA)

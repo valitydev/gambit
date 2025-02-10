@@ -21,10 +21,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -50,6 +47,24 @@ public class StubDataServiceHandler implements StubDataServiceSrv.Iface {
         Map<String, String> mergedDataMap = getDataMapByDataIds(dataSetInfos, dataIds);
         log.debug("getData result map: {}", mergedDataMap);
         return new DataResponse(mergedDataMap);
+    }
+
+    @Override
+    public DataSetResponse getFullDataSet(DataRowRequest dataRowRequest) throws DataSetNotFound, TException {
+        log.debug("Received getFullDataSet request: {}", dataRowRequest);
+        var dataSetInfoByName = dataSetInfoService.getDataSetInfoByName(dataRowRequest.getDataSetName());
+        if (dataSetInfoByName.isEmpty()) {
+            throw new DataSetNotFound();
+        }
+        List<DataRow> list =
+                dataService.getDataByDataSetInfoId(dataSetInfoByName.get().getId()).stream()
+                        .map(data -> new DataRow(DataMapFactory.createDataMap(
+                                dataSetInfoByName.get().getHeaders(),
+                                data.getValues())
+                        ))
+                        .collect(Collectors.toList());
+        log.debug("getFullDataSet result list: {}", list);
+        return new DataSetResponse(list);
     }
 
     @Override
