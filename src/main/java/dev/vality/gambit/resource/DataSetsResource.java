@@ -6,6 +6,7 @@ import dev.vality.gambit.exception.FileProcessingException;
 import dev.vality.gambit.service.DataSetService;
 import dev.vality.gambit.factory.BufferedReaderFactory;
 import dev.vality.openapi.gambit.api.DataSetsApi;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import java.io.BufferedReader;
 import java.io.IOException;
 

@@ -1,11 +1,11 @@
 server:
-  port: '@server.port@'
+  port: '${server.port}'
   rest:
-    port: '@server.rest.port@'
+    port: '${server.rest.port}'
 
 spring:
   application:
-    name: '@project.name@'
+    name: '${project.name}'
   output:
     ansi:
       enabled: always
@@ -31,10 +31,10 @@ management:
   security:
     flag: false
   server:
-    port: '@management.port@'
+    port: '${management.port}'
   metrics:
     tags:
-      application: '@project.name@'
+      application: '${project.name}'
     export:
       prometheus:
         enabled: true
