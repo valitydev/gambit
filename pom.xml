@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>gambit</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>gambit</name>
@@ -189,7 +189,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-remote-resources-plugin</artifactId>
-                <version>1.6.0</version>
+                <version>1.7.0</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.shared</groupId>
@@ -309,7 +309,7 @@
                     <dependency>
                         <groupId>commons-io</groupId>
                         <artifactId>commons-io</artifactId>
-                        <version>2.18.0</version>
+                        <version>2.19.0</version>
                     </dependency>
                 </dependencies>
             </plugin>
